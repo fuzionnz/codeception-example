@@ -1,0 +1,36 @@
+{
+    "require": {
+        "codeception/codeception": "*",
+        "fuzionnz/codeception-drupal-drush": "dev-develop",
+        "fuzionnz/codeception-config-helper": "dev-master",
+        "fuzionnz/codeception-drupal-pages": "~0.2",
+        "fuzionnz/codeception-drupal-variable": "~0.3",
+        "fuzionnz/codeception-civicrm-pages": "~0.1"
+    },
+    "require-dev": {
+        "league/factory-muffin": "^3.0",
+        "league/factory-muffin-faker": "^2.0"
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/fuzionnz/codeception-drupal-pages"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/fuzionnz/codeception-drupal-drush"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/fuzionnz/codeception-drupal-variable"
+        },
+        {
+            "type": "vcs",
+            "url": "git@git.fuzion.co.nz:projects/codeception-civicrm-pages.git"
+        },
+        {
+            "type": "path",
+            "url": "/Users/chris/Documents/codeception-config-helper"
+        }
+    ]
+}
