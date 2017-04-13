@@ -1,12 +1,25 @@
 # Codeception Test Suite Configuration
-#
-# Suite for acceptance tests.
-# Perform tests in browser using the WebDriver or PhpBrowser.
+
+# suite for acceptance tests.
+# perform tests in browser using the WebDriver or PhpBrowser.
 # If you need both WebDriver and PHPBrowser tests - create a separate suite.
 
 class_name: AcceptanceTester
 modules:
     enabled:
-        - PhpBrowser:
-            url: http://localhost/myapp
-        - \Helper\Acceptance
+        - WebDriver
+        - ConfigHelper
+        # - DrupalDrush
+        # - DrupalVariable
+    config:
+        WebDriver:
+            url: 'http://example.dev'
+            browser: 'firefox'
+            window_size: '1024x768'
+        ConfigHelper:
+            site_key:       'SITEKEY'
+            admin_apikey:   'APIKEY'
+            admin_username: 'some.administrator'
+            admin_password: 'some.adminpass'
+            demo_username:  'some.regularuser'
+            demo_password:  'some.regularpass'
