@@ -9,6 +9,7 @@ modules:
     enabled:
         - WebDriver
         - ConfigHelper
+        - Asserts
         # - DrupalDrush
         # - DrupalVariable
     config:
@@ -16,6 +17,9 @@ modules:
             url: 'http://example.dev'
             browser: 'firefox'
             window_size: '1024x768'
+        CiviRemoteApiHelper:
+            path_civicrm_settings: '/Users/chris/Sites/commerce.dev/sites/default/civicrm.settings.php'
+            path_civicrm_api: '/Users/chris/Sites/commerce.dev/sites/all/modules/civicrm/api/class.api.php'
         ConfigHelper:
             site_key:       'SITEKEY'
             admin_apikey:   'APIKEY'
