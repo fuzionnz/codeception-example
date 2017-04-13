@@ -10,10 +10,8 @@ class CiviRemoteApiHelper extends \Codeception\Module
 {
   protected $civicrm_api3;
 
-  public function getCivicrmApiClass()
+  public function getCivicrmApiClass(AcceptanceTester $I)
   {
-    require_once $this->getConfig('path_civicrm_settings');
-    require_once $this->getConfig('path_civicrm_api');
     $civicrm_api3_class = new \civicrm_api3();
     die(gettype($civicrm_api3_class));
     return civicrm_api3_class;

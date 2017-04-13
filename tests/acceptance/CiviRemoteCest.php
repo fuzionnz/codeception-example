@@ -35,6 +35,11 @@ class CiviRemoteCest
 
     public function testCiviRemoteAPI(AcceptanceTester $I)
     {
+      // Get tat Civi config and API. (API class shoul come from composer.)
+      // $I->assertEquals($I->getConfig('path_civicrm_settings'), $I->getConfig('path_civicrm_api'));
+      require_once $I->getConfig('path_civicrm_settings');
+      require_once $I->getConfig('path_civicrm_api');
+
       // Ensure we have some contacts in our DB.
       $civicrm_api = $I->getCivicrmApiClass();
       $I->assertEquals('foo', gettype($civicrm_api));
