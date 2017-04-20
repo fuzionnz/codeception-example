@@ -45,7 +45,8 @@ class DonationPagesCest
     foreach ($client->values as $contribution_page) {
       $I->amOnPage("civicrm/contribute/transact?reset=1&id={$contribution_page->id}&action=preview");
       $I->see($contribution_page->title);
-      $I->wait(3);
+
+      
     }
 
     // required_values is the civicrm field names (from civicrm pages)
