@@ -39,13 +39,8 @@ class CiviRemoteCest
    */
   public function testCiviRemoteAPI(AcceptanceTester $I)
   {
-    $api_creds = [
-      'api_key' => $I->getConfig('api_key'),
-      'site_key' => $I->getConfig('site_key'),
-      'url' => $I->getConfig('url'),
-    ];
     // Ensure we have some contacts in our DB.
-    $civicrm_api = $I->getCiviApi();
+    $civicrm_api = $I->CiviApi();
     $result = $civicrm_api->Contact->Get([
       'contact_type' => 'Individual',
       'options' => [

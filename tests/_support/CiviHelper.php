@@ -7,32 +7,38 @@
 namespace Codeception\Module;
 
 use \Civi\civicrm_api3;
-use Dompdf\Exception;
-use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
+use \Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 
 class CiviHelper extends \Codeception\Module
 {
   static protected $civicrm_api3;
 
+  protected $requiredFields = [
+    'api_key',
+    'site_key',
+    'url'
+  ];
+
+  protected $config = [
+    'api_key' => '',
+    'site_key' => '',
+    'url' => 'http://localhost/sites/all/modules/civicrm/extern/rest.php',
+  ];
+
   /**
    * @param \AcceptanceTester $I
    * @return \Civi\civicrm_api3
    */
-  public function CiviApi($creds)
+  public function CiviApi()
   {
-    if (!isset($this->civicrm_api3)) {
-      foreach (['api_key', 'site_key', 'url'] as $required) {
-        if (!isset($creds[$required])) {
-          throw new InvalidConfigurationException('Missing required value: ' . $required);
-        }
-      }
+    if (!isset($this->civicrm_api3) || empty($this->civicrm_api3)) {
       // class.api.php wants 'server' and 'path', OK.
-      $url = parse_url($creds['url']);
+      $url = parse_url($this->config['url']);
       $config = [
-        'server' => $url['scheme'] . '://' . $url['host'],
-        'path' => $url['path'],
-        'key' => $creds['site_key'],
-        'api_key' => $creds['api_key'],
+        'server'  => $url['scheme'] . '://' . $url['host'],
+        'path'    => $url['path'],
+        'key'     => $this->config['site_key'],
+        'api_key' => $this->config['api_key'],
       ];
       $this->civicrm_api3 = new civicrm_api3($config);
     }

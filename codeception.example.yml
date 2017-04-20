@@ -19,3 +19,14 @@ modules:
             user: ''
             password: ''
             dump: tests/_data/dump.sql
+        ConfigHelper:
+            site_key:       ''
+            admin_apikey:   ''
+            admin_username: 'some.administrator'
+            admin_password: 'some.adminpass'
+            demo_username:  'some.regularuser'
+            demo_password:  'some.regularpass'
+        CiviHelper:
+            api_key: ''
+            site_key: ''
+            url: 'http://localhost/sites/all/modules/civicrm/extern/rest.php'

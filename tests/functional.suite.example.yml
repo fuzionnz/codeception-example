@@ -14,7 +14,4 @@ modules:
         # add framework module here
         - \Helper\Functional
     config:
-        CiviHelper:
-            api_key: 'ABCDEF'
-            site_key: '123456'
-            url: 'http://example.dev/sites/all/modules/civicrm/extern/rest.php'
+
