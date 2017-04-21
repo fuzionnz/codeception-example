@@ -21,7 +21,7 @@ class DonationPagesCest
    *
    * @group donation
    */
-  public function DonationPages(AcceptanceTester $I)
+  public function DonationPages(\Step\Acceptance\ContributionPage $I)
   {
     $credentials = [
       'api_key' => $I->getConfig('api_key'),
@@ -46,7 +46,17 @@ class DonationPagesCest
       $I->amOnPage("civicrm/contribute/transact?reset=1&id={$contribution_page->id}&action=preview");
       $I->see($contribution_page->title);
 
-      
+      // Not sure how to extract available contribution amounts from CiviCRM.
+      // But ... we can extract them from the DOM! @TODO
+      // For now, just use default amount.
+
+      // Ex: Put $1 into the "Other" field.
+      // $I->fillField('.other_amount-content .crm-form-text', 1);
+
+      // Complete the required fields.
+      $I->fillCiviContributeFields();
+
+      $I->wait(30);
     }
 
     // required_values is the civicrm field names (from civicrm pages)
