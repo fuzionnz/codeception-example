@@ -28,13 +28,20 @@ class ContributionPage extends \AcceptanceTester
 
     // Get these infos from the payment provider helper.
     // External site PPs will have a whole other page helper?
-    $I->fillField('.creditcard', '4111111111111111');
-    $I->fillField('cvv2', '111');
-    $I->selectOption('#credit_card_exp_date_M', '12');
-    $I->selectOption('#credit_card_exp_date_Y', date('Y')+1);
+    //$I->fillField('.creditcard', '4111111111111111');
+    //$I->fillField('cvv2', '111');
+    //$I->selectOption('#credit_card_exp_date_M', '12');
+    //$I->selectOption('#credit_card_exp_date_Y', date('Y')+1);
 
-    // Submit!
+      // Submit!
     $I->click('#_qf_Main_upload-bottom');
+
+    // If the contribute page has a confirm screen, check for expected details.
+    $I->see('Please verify');
+    $I->click('#_qf_Main_upload-bottom');
+
+    // Now we're on to DPS (for this particular example).
+
   }
 
 }

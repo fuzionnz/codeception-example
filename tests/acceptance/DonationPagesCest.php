@@ -23,27 +23,21 @@ class DonationPagesCest
    */
   public function DonationPages(\Step\Acceptance\ContributionPage $I)
   {
-    $credentials = [
-      'api_key' => $I->getConfig('api_key'),
-      'site_key' => $I->getConfig('site_key'),
-      'url' => $I->getConfig('url'),
-    ];
-
-    $client = $I->CiviApi($credentials);
+    $client = $I->CiviApi();
 
     // Get the contribution pages which are enabled.
     $client->ContributionPage->Get([
       'is_active' => 1,
       'options' => [
         'sequential' => 1,
-        'limit' => 10,
+        'limit' => 1,
       ],
     ]);
 
     // Iterate through all the enabled contribution pages, verify that they have
     // the expected title and a submit button.
     foreach ($client->values as $contribution_page) {
-      $I->amOnPage("civicrm/contribute/transact?reset=1&id={$contribution_page->id}&action=preview");
+      $I->amOnPage("civicrm/contribute/transact?reset=1&id={$contribution_page->id}");
       $I->see($contribution_page->title);
 
       // Not sure how to extract available contribution amounts from CiviCRM.
@@ -52,6 +46,30 @@ class DonationPagesCest
 
       // Ex: Put $1 into the "Other" field.
       // $I->fillField('.other_amount-content .crm-form-text', 1);
+
+      // THis all goes over in EntityExtra I reckon. Whoo!
+      // Get the Payment Processor, then ...
+      $client->PaymentProcessor->Get([
+        'id' => $client->values[0]->payment_processor,
+      ]);
+
+      $payment_processor = $client->values[0];
+
+      // Get the Payment Processor Type.
+      $client->PaymentProcessorType->Get([
+        'id' => $payment_processor->payment_processor_type_id,
+      ]);
+
+      $payment_processor_type = $client->values[0];
+
+      // Argh we still need to ID the processor since this just says "Omnipay".
+      switch ($payment_processor_type->name) {
+        case 'omnipay_PaymentExpress_PxPay':
+          print_r($payment_processor_type->name);
+
+        case 'Dummy':
+      }
+      // $I->see(print_r($client->values[0]));
 
       // Complete the required fields.
       $I->fillCiviContributeFields();
@@ -65,9 +83,10 @@ class DonationPagesCest
     // + dynamically match any field marked "required" as populsyttyrf
 
     // Run a transaction - for each payment processor on the page.
+    // API doesn't reveal processors?! So we will use the default processor for
+    // now. Make it easy to add second test for same page with diff processor?
 
     // These are fetchable via lookup (use civicrm json/http).
-
 
   }
 }

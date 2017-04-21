@@ -204,7 +204,7 @@ class civicrm_api3 {
       $result = file_get_contents($query . '&' . $fields);
     }
     if (!$res = json_decode($result)) {
-      $res = new stdClass();
+      $res = new \stdClass();
       $res->is_error = 1;
       $res->error_message = 'Unable to parse returned JSON';
       $res->level = 'json_decode';
