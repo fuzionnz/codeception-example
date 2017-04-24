@@ -1,5 +1,6 @@
 <?php
 
+use \Codeception\Example;
 
 class DonationPagesCest
 {
@@ -14,6 +15,51 @@ class DonationPagesCest
   // tests
   public function tryToTest(AcceptanceTester $I)
   {
+  }
+
+  /**
+   * @return array
+   */
+  protected function contributionPageProvider()
+  {
+    $client = $I->CiviApi();
+    // Get the contribution pages which are enabled.
+    $client->ContributionPage->Get([
+      'is_active' => 1,
+      'options' => [
+        'sequential' => 1,
+        'limit' => 1,
+      ],
+    ]);
+    print_r($client->values);
+    // Convert to this format.
+    return [
+      [
+        'id'=>"1",
+        'title'=> "Help Support CiviCRM!",
+        'payment_processor_name' => 'omnipay_PaymentExpress_PxPay',
+        'amount' => '10',
+        'amount_field' => '3-2-4',
+        'data' => '',
+      ],
+    ];
+  }
+
+  /**
+   * @example { "id": "1", "title": "Help Support CiviCRM!", "pp": "omnipay_PaymentExpress_PxPay", "amt_id": "CIVICRM_QFID_5_8", "amt": "50.00" }
+   * @example { "id": "2", "title": "Help Support CiviCRM!", "pp": "omnipay_PaymentExpress_PxPay", "amt_id": "CIVICRM_QFID_4_6", "amt": "10.00" }
+   *
+   * @param AcceptanceTester $I, \Codeception\Example $example
+   *
+   * @group edsf
+   */
+  function AllDonationPages(\Step\Acceptance\ContributionPage $I, \Codeception\Example $example) {
+    $I->amOnPage("civicrm/contribute/transact?reset=1&id={$example['id']}");
+    $I->see($example['title']);
+    $I->click('#' . $example['amt_id']);
+    $I->fillCiviContributeFields();
+
+    $I->wait(10);
   }
 
   /**
@@ -36,46 +82,55 @@ class DonationPagesCest
 
     // Iterate through all the enabled contribution pages, verify that they have
     // the expected title and a submit button.
-    foreach ($client->values as $contribution_page) {
-      $I->amOnPage("civicrm/contribute/transact?reset=1&id={$contribution_page->id}");
-      $I->see($contribution_page->title);
+    //print_r($client->values);
+    $contribution_pages = (array)$client->values;
+    //print_r($contribution_pages);
+    if (!empty($contribution_pages)) {
+      foreach ($contribution_pages as $contribution_page) {
+        print_r($contribution_page);
+        $I->amOnPage("civicrm/contribute/transact?reset=1&id={$contribution_page->id}");
+        $I->see($contribution_page->title);
 
-      // Not sure how to extract available contribution amounts from CiviCRM.
-      // But ... we can extract them from the DOM! @TODO
-      // For now, just use default amount.
+        // Complete the required fields.
+        $I->fillCiviContributeFields();
 
-      // Ex: Put $1 into the "Other" field.
-      // $I->fillField('.other_amount-content .crm-form-text', 1);
+        // Not sure how to extract available contribution amounts from CiviCRM.
+        // But ... we can extract them from the DOM! @TODO
+        // For now, just use default amount.
 
-      // THis all goes over in EntityExtra I reckon. Whoo!
-      // Get the Payment Processor, then ...
-      $client->PaymentProcessor->Get([
-        'id' => $client->values[0]->payment_processor,
-      ]);
+        // Ex: Put $1 into the "Other" field.
+        // $I->fillField('.other_amount-content .crm-form-text', 1);
 
-      $payment_processor = $client->values[0];
+        // THis all goes over in EntityExtra I reckon. Whoo!
+        // Get the Payment Processor, then ...
+        //print_r($contribution_page);
+        if (isset($contribution_page->payment_processor)) {
+          $payment_processor_id = $contribution_page->payment_processor;
+          if ($client->PaymentProcessor->Get([ 'id' => $contribution_page->payment_processor ])) {
+            // Actually pages have multiple pps. For now keep page config simple.
+            $payment_processor = $client->values[0];
 
-      // Get the Payment Processor Type.
-      $client->PaymentProcessorType->Get([
-        'id' => $payment_processor->payment_processor_type_id,
-      ]);
+            // Get the Payment Processor Type.
+            if ($client->PaymentProcessorType->Get(['id' => $payment_processor->payment_processor_type_id])) {
+              $payment_processor_type = $client->values[0];
 
-      $payment_processor_type = $client->values[0];
+              // Argh we still need to ID the processor since this just says "Omnipay".
+              switch ($payment_processor_type->name) {
+                case 'omnipay_PaymentExpress_PxPay':
+                   print_r($payment_processor_type->name);
 
-      // Argh we still need to ID the processor since this just says "Omnipay".
-      switch ($payment_processor_type->name) {
-        case 'omnipay_PaymentExpress_PxPay':
-          print_r($payment_processor_type->name);
+                case 'Dummy':
+              }
+            }
+          }
+        }
 
-        case 'Dummy':
+        // $I->see(print_r($client->values[0]));
+
+        $I->wait(30);
       }
-      // $I->see(print_r($client->values[0]));
-
-      // Complete the required fields.
-      $I->fillCiviContributeFields();
-
-      $I->wait(30);
     }
+
 
     // required_values is the civicrm field names (from civicrm pages)
     // + any associated with this donation page

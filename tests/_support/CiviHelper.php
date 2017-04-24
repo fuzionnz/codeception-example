@@ -32,7 +32,7 @@ class CiviHelper extends \Codeception\Module
   public function CiviApi()
   {
     // We could allow alternate creds to be passed in.
-    if (!isset($this->civicrm_api3) || empty($this->civicrm_api3)) {
+//    if (!isset($this->civicrm_api3) || empty($this->civicrm_api3)) {
       // class.api.php wants 'server' and 'path', OK.
       $url = parse_url($this->config['url']);
       $config = [
@@ -41,8 +41,8 @@ class CiviHelper extends \Codeception\Module
         'key'     => $this->config['site_key'],
         'api_key' => $this->config['api_key'],
       ];
-      $this->civicrm_api3 = new civicrm_api3($config);
-    }
-    return $this->civicrm_api3;
+      return new civicrm_api3($config);
+//    }
+    // return $this->civicrm_api3;
   }
 }
