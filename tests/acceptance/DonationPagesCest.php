@@ -1,5 +1,6 @@
 <?php
 
+use \Codeception\Example;
 
 class DonationPagesCest
 {
@@ -30,18 +31,35 @@ class DonationPagesCest
         'limit' => 1,
       ],
     ]);
-    return $client->values;
+    print_r($client->values);
+    // Convert to this format.
+    return [
+      [
+        'id'=>"1",
+        'title'=> "Help Support CiviCRM!",
+        'payment_processor_name' => 'omnipay_PaymentExpress_PxPay',
+        'amount' => '10',
+        'amount_field' => '3-2-4',
+        'data' => '',
+      ],
+    ];
   }
 
   /**
-   * @dataProvider pageProvider
+   * @example { "id": "1", "title": "Help Support CiviCRM!", "pp": "omnipay_PaymentExpress_PxPay", "amt_id": "CIVICRM_QFID_5_8", "amt": "50.00" }
+   * @example { "id": "2", "title": "Help Support CiviCRM!", "pp": "omnipay_PaymentExpress_PxPay", "amt_id": "CIVICRM_QFID_4_6", "amt": "10.00" }
    *
    * @param AcceptanceTester $I, \Codeception\Example $example
    *
    * @group edsf
    */
-  function AllDonationPages(AcceptanceTester $I, $example) {
-    $I->amOnPage("civicrm/contribute/transact?reset=1&id={$example->id}");
+  function AllDonationPages(\Step\Acceptance\ContributionPage $I, \Codeception\Example $example) {
+    $I->amOnPage("civicrm/contribute/transact?reset=1&id={$example['id']}");
+    $I->see($example['title']);
+    $I->click('#' . $example['amt_id']);
+    $I->fillCiviContributeFields();
+
+    $I->wait(10);
   }
 
   /**
