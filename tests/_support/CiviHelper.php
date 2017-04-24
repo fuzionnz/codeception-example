@@ -11,7 +11,7 @@ use \Symfony\Component\Config\Definition\Exception\InvalidConfigurationException
 
 class CiviHelper extends \Codeception\Module
 {
-  static protected $civicrm_api3;
+  protected $civicrm_api3;
 
   protected $requiredFields = [
     'api_key',
