@@ -7,9 +7,8 @@ class DonationPagesCest
 {
     private $civicrm_api3;
 
-    public function _before(AcceptanceTester $I)
+    public function _before()
     {
-        $I->civicrm_api3 = $I->CiviApi($I);
     }
 
     public function _after(AcceptanceTester $I)
@@ -25,7 +24,7 @@ class DonationPagesCest
      * @return array
      *
      */
-    protected function contributionPageProvider()
+    protected function contributionPageProvider(AcceptanceTester $I)
     {
         //    $client = $this->civicrm_api3;
         //    print_r($client);
@@ -37,6 +36,15 @@ class DonationPagesCest
         //        'limit' => 1,
         //      ],
         //    ]);
+        $contributionPages = $I->CiviRemote([
+            'entity' => 'Contact',
+            'action' => 'get',
+            'options' => [
+                'limit' => 1,
+            ]
+        ]);
+        codecept_debug($contributionPages);
+
         // Convert to this format.
         return [
             [
@@ -52,12 +60,19 @@ class DonationPagesCest
     /**
      * @param AcceptanceTester $I, \Codeception\Example $example
      *
-     * @dataprovider contributionPageProvider
-     *
      * @group donation
      * @group dataprovider
      */
-    function AllDonationPagesByProvider(\Step\Acceptance\ContributionPage $I, \Codeception\Example $example) {
+    function AllDonationPages(\Step\Acceptance\ContributionPage $I, \Codeception\Example $example) {
+        $contributionPages = $I->CiviRemote([
+            'entity' => 'Contact',
+            'action' => 'get',
+            'options' => [
+                'limit' => 1,
+            ]
+        ]);
+        codecept_debug($contributionPages);
+
         $I->amOnPage("civicrm/contribute/transact?reset=1&id={$example['id']}");
         $I->see($example['title']);
     }
