@@ -7,6 +7,7 @@
 namespace Codeception\Module;
 
 use \Civi\civicrm_api3;
+use Dompdf\Exception;
 use \Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 
 class CiviHelper extends \Codeception\Module
@@ -29,8 +30,15 @@ class CiviHelper extends \Codeception\Module
    * @param \AcceptanceTester $I
    * @return \Civi\civicrm_api3
    */
-  public function CiviApi()
+  public function CiviApi(\AcceptanceTester $I)
   {
+    $config = \Codeception\Configuration::config();
+    if (!isset($config['modules']['config']['CiviHelper']))
+    {
+      throw new Exception('no config');
+    }
+    codecept_debug($config['modules']['config']['CiviHelper']);
+
     // We could allow alternate creds to be passed in.
 //    if (!isset($this->civicrm_api3) || empty($this->civicrm_api3)) {
       // class.api.php wants 'server' and 'path', OK.
@@ -45,4 +53,5 @@ class CiviHelper extends \Codeception\Module
 //    }
     // return $this->civicrm_api3;
   }
+
 }
