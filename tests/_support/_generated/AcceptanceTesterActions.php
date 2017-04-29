@@ -3392,7 +3392,7 @@ trait AcceptanceTesterActions
    * @return \Civi\civicrm_api3
      * @see \Codeception\Module\CiviHelper::CiviApi()
      */
-    public function CiviApi() {
+    public function CiviApi($I) {
         return $this->getScenario()->runStep(new \Codeception\Step\Action('CiviApi', func_get_args()));
     }
 }
