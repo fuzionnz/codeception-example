@@ -1,10 +1,56 @@
 <?php
-namespace Step\Acceptance;
 
 use Faker\Factory;
 
+namespace Step\Acceptance;
+
 class ContributionPage extends \AcceptanceTester
 {
+
+  /**
+   * I'd like this to be a dataProvider ... but don't yet know how to pass
+   * a working CiviCRM API config into a dataprovider.
+   *
+   * @return array
+   */
+  function getContributionPages()
+  {
+    $client = $this->CiviApi();
+    // Get the contribution pages which are enabled.
+    $client->ContributionPage->Get([
+      'is_active' => 1,
+      'options' => [
+        'sequential' => 1,
+        'limit' => 1,
+      ],
+    ]);
+    $data = [];
+    foreach ($client->values as $page) {
+      $data[$page->id] = [
+        'id' => $page->id,
+        'title' => $page->title,
+        'pp' => $this->getPaymentProcessorName($page),
+        'amt_id' => $this->getAmountId($page),
+        'amt' => $this->getAmount($page),
+      ];
+
+    }
+    return $data;
+  }
+
+
+  protected function getPaymentProcessorName($page) {
+    print_r($page);
+    return 'omnipay_PaymentExpress_PxPay';
+  }
+
+  protected function getAmountId($page) {
+    return 'CIVICRM_QFID_5_8';
+  }
+
+  protected function getAmount($page) {
+    return '50.00';
+  }
 
   public function fillCiviContributeFields()
   {
@@ -41,7 +87,14 @@ class ContributionPage extends \AcceptanceTester
     $I->click('#_qf_Main_upload-bottom');
 
     // Now we're on to DPS (for this particular example).
+  }
 
+  public function checkOut($provider_class)
+  {
+    switch ($provider_class)
+    {
+      case ''
+    }
   }
 
 }

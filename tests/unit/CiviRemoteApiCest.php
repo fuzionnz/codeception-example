@@ -16,7 +16,7 @@ class CiviRemoteApiCest
      *
      * @group blah
      */
-    public function authenticatedCiviRemoteContactGetShouldNotBeAnError(UnitTester $I)
+    public function authenticatedContactGetShouldNotBeAnError(UnitTester $I)
     {
         $result = $I->CiviRemote([
             'entity' => 'Contact',
@@ -39,31 +39,19 @@ class CiviRemoteApiCest
      *
      * @group unauthenticated
      */
-    public function unauthenticatedGetRequestShouldBeAnError(UnitTester $I)
+    public function unauthenticatedContactGetShouldBeAnError(UnitTester $I)
     {
-        $I->sendGET('', ['json' => 1]);
-        $I->seeResponseContainsJson(['is_error' => 1]);
-        $I->seeResponseContainsJson(['error_message' => 'Failed to authenticate key']);
-    }
-
-    /**
-     * Check we can retrieve a contact from the API.
-     *
-     * @group authenticated
-     */
-    public function authenticatedContactGetShouldNotBeAnError(UnitTester $I)
-    {
-        $config = \Codeception\Configuration::config();
-        $I->sendPOST('', [
-            'api_key' => $config['modules']['config']['CiviHelper']['api_key'],
-            'key' => $config['modules']['config']['CiviHelper']['site_key'],
+        $result = $I->CiviRemote([
+            // Invalid API key.
+            'api_key' => null,
             'entity' => 'Contact',
-            'action' => 'Get',
-            'json' => 1,
+            'action' => 'get',
             'options' => [
                 'limit' => 1,
             ]
         ]);
-        $I->seeResponseContainsJson(['is_error' => 0]);
+        $expected = 1;
+        $actual = $result['is_error'];
+        $I->assertEquals($expected, $actual);
     }
 }
