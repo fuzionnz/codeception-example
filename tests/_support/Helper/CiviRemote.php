@@ -46,7 +46,8 @@ class CiviRemote extends \Codeception\Module
         // Guzzle throws exception on HTTP error, we don't need to check that.
         // Need to check returned values are valid JSON though.
         $json = (string) $request->getBody();
-        $data = json_decode($json);
+        // Force to an array when decoding.
+        $data = json_decode($json, true);
         if (json_last_error() != JSON_ERROR_NONE) {
             throw new \Exception('Error decoding CiviRemote response (JSON error #' . json_last_error() . ')');
         }

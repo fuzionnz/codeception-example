@@ -15,29 +15,7 @@ class ContributionPage extends \AcceptanceTester
      */
     function getContributionPages()
     {
-        $client = $this->CiviApi();
-        // Get the contribution pages which are enabled.
-        $client->ContributionPage->Get([
-            'is_active' => 1,
-            'options' => [
-                'sequential' => 1,
-                'limit' => 1,
-            ],
-        ]);
-        $data = [];
-        foreach ($client->values as $page) {
-            $data[$page->id] = [
-                'id' => $page->id,
-                'title' => $page->title,
-                'pp' => $this->getPaymentProcessorName($page),
-                'amt_id' => $this->getAmountId($page),
-                'amt' => $this->getAmount($page),
-            ];
-
-        }
-        return $data;
     }
-
 
     protected function getPaymentProcessorName($page) {
         print_r($page);
@@ -52,6 +30,30 @@ class ContributionPage extends \AcceptanceTester
         return '50.00';
     }
 
+    /**
+     * If there are others we can get them with increased craziness. Should
+     * just put a .required on each required input, this JS will do for now.
+     */
+    public function fillCiviRequiredFields() {
+        $I = $this;
+        $I->executeJs("
+           CRM.$('input', CRM.$('.crm-marker[title*=\"required\"]').closest('.crm-section')).each(function () { 
+             if (this.value === '') { 
+               this.value = 'Dummy'; 
+             } 
+           });
+           CRM.$('select', CRM.$('.crm-marker[title*=\"required\"]').closest('.crm-section')).each(function () { 
+             if (this.selectedIndex === 0) { 
+               this.selectedIndex = 3; 
+             } 
+           });
+        ");
+    }
+
+    /**
+     * Fill essential CiviCRM Contribute fields (first name, last name, email)
+     * using Faker data.
+     */
     public function fillCiviContributeFields()
     {
         $faker = \Faker\Factory::create();
@@ -62,43 +64,77 @@ class ContributionPage extends \AcceptanceTester
 
         // Some are slightly trickier. Required ID could be got from API, or we
         // could just add a .first-name class etc to Civi's forms.
-        $I->executeJS("CRM.$('input[class*=\"_first_name\"]').val('" . $faker->firstName() . "');");
-        $I->executeJS("CRM.$('input[class*=\"_last_name\"]').val('" . $faker->lastName() . "');");
-
-        // If there are others we can get them with increased craziness. Should
-        // just put a .required on each required input, this JS covers it for now.
-        $I->executeJs("
-      CRM.$('input', CRM.$('.crm-marker[title*=\"required\"]').closest('.crm-section')).each(function () { if (this.value === '') { this.value = 'Dummy'; } });
-      CRM.$('select', CRM.$('.crm-marker[title*=\"required\"]').closest('.crm-section')).each(function () { if (this.selectedIndex === 0) { this.selectedIndex = 3; } });
-    ");
-
-        // Get these infos from the payment provider helper.
-        // External site PPs will have a whole other page helper?
-        //$I->fillField('.creditcard', '4111111111111111');
-        //$I->fillField('cvv2', '111');
-        //$I->selectOption('#credit_card_exp_date_M', '12');
-        //$I->selectOption('#credit_card_exp_date_Y', date('Y')+1);
-
-        // Submit!
-        $I->click('#_qf_Main_upload-bottom');
-
-        // If the contribute page has a confirm screen, check for expected details.
-        $I->see('Please verify');
-        $I->click('#_qf_Main_upload-bottom');
-
-        // Now we're on to DPS (for this particular example).
+        $I->executeJS("CRM.$('input[id*=\"_first_name\"]').val(" . json_encode($faker->firstName()) . ");");
+        $I->executeJS("CRM.$('input[id*=\"_last_name\"]').val(" . json_encode($faker->lastName()) . ");");
     }
 
     /**
-     * @param $provider_class
+     * Complete a checkout using a specific payment processor type.
+     *
+     * @param array $details
      */
-    public function checkOut($provider_class)
+    public function completeTransaction($details)
     {
-        switch ($provider_class)
-        {
-            case '':
+        $faker = \Faker\Factory::create();
+        $I = $this;
 
+        // If we're in test mode, we need to increment the payment processor ID
+        // to select the correct option.
+        if ($details['mode'] == 'test')
+        {
+            $details['payment_processor_id']++;
+        }
+
+        // Select the payment method.
+        $I->click("#CIVICRM_QFID_{$details['payment_processor_id']}_payment_processor_id");
+
+        // May need a pause here to allow checkout to load?
+        $I->wait(2);
+
+        switch ($details['payment_processor_class_name'])
+        {
+            // If running into contribution ID conflicts with Omnipay, can work
+            // around contribution_id vs transaction_id conflation by raising
+            // mysql -e 'alter table civicrm_contribution auto_increment=1000'
+            // @see
+            case 'Payment_OmnipayMultiProcessor':
+            case 'omnipay_PaymentExpress_PxPay':
+                // "Confirm Contribution"
+                $I->click('#_qf_Main_upload-bottom');
+
+                // We are on the confirm page now.
+                // @TODO This is a config option?
+                $I->see('Please verify the information below carefully.');
+                $I->click('#_qf_Confirm_next-top');
+
+                // PxPay checkout.
+                $I->fillField('input[name=CardNumber]', '4111111111111111');
+                $I->fillField('input[name=CardHolderName]', $faker->name());
+                $I->fillField('input[name=Cvc2]', '111');
+                $I->click('button.DpsPxPayOK');
+
+                $I->see('Transaction Approved');
+                $I->click('a.DpsPxPayOK');
+
+                break;
+
+            case 'Dummy':
+            default:
+                codecept_debug(['$details' => $details]);
+                $I->selectOption('#credit_card_type', 'Visa');
+                $I->fillField('#credit_card_number', '4111111111111111');
+                $I->fillField('#cvv2', '111');
+                $I->selectOption('#credit_card_exp_date_M', '12');
+                $I->selectOption('#credit_card_exp_date_Y', date('Y') +  1);
+                $I->fillCiviRequiredFields();
+                $I->click('#_qf_Main_upload-bottom');
+                $I->click('#_qf_Confirm_next-top');
         }
     }
+
+    /**
+     * Clear the CiviCRM "you are leaving the page!" message.
+     */
+    // public function
 
 }
