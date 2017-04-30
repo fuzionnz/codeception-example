@@ -17,36 +17,95 @@ class DonationPagesCest
 
     public function _inject()
     {
-        $config = \Codeception\Configuration::config();
-        $this->civiRemoteApi = new \CiviRemoteApi($config['modules']['config']['CiviRemoteApi']);
     }
 
     /**
-     * This is an example dataProvider for contribution pages.
+     * Example dataProvider for contribution pages.
      *
      * @return array
      */
-    protected function contributionPageProvider(AcceptanceTester $I)
+    protected function contributionPageProvider()
     {
-        $contributionPages = $I->CiviRemote([
+        // I'd love to be able to initialise this in _before() or _inject(),
+        // but it seems like dataProviders are called before that ...
+        $config = \Codeception\Configuration::config();
+        $civiRemoteApi = new \CiviRemoteApi($config['modules']['config']['CiviRemoteApi']);
+        $res = $civiRemoteApi->CiviRemote([
             'entity' => 'Contact',
             'action' => 'get',
-            'options' => [
-                'limit' => 1,
-            ],
         ]);
 
-        // magic here ...
-
-        return [
-            [
-                "id" => "1",
-                "title" => "Help Support CiviCRM!",
-                "pp" => "omnipay_PaymentExpress_PxPay",
-                "amt_id" => "CIVICRM_QFID_5_8",
-                "amt" => "50.00",
+        $params = [
+            'entity' => 'ContributionPage',
+            'action' => 'get',
+            'is_active' => 1,
+            'options' => [
+//                'limit' => 1,
             ],
         ];
+        $pages = $civiRemoteApi->CiviRemote($params);
+        $examples = [];
+
+        // Iterate over pages to pick up payment processors.
+        foreach ($pages['values'] as $page) {
+            $example = [
+                'page_id' => $page['id'],
+                'page_title' => $page['title'],
+                'page_url' => "civicrm/contribute/transact?reset=1&id={$page['id']}",
+            ];
+
+            // CiviCRM does not make price set data available to Contribute API?
+            // If we want to test beyond the default price option, we need an
+            // extension adding data via hook_civicrm_apiWrappers() or to
+            // or to retrieve options from the DOM.
+            // @see CRM-20503
+
+            // Check if "amount block" is active, and whether we got back a price
+            // set from the API.
+            //            if ($page['amount_block_is_active']) {
+            if (isset($page['min_amount']) && $page['min_amount'] > 0) {
+                $example['other_amount'] = $page['min_amount'];
+            } else {
+                $example['other_amount'] = 1;
+            }
+            //            }
+
+            if (isset($page['payment_processor'])) {
+                // If API returned a single value, make it an array.
+                $processor_ids = (is_array($page['payment_processor'])) ?
+                    $page['payment_processor'] : [$page['payment_processor']];
+
+                foreach ($processor_ids as $payment_processor_id) {
+                    $params = [
+                        'entity' => 'PaymentProcessor',
+                        'action' => 'get',
+                        'id' => $payment_processor_id,
+                        'sequential' => true,
+                    ];
+                    $payment_processor = $civiRemoteApi->civiRemote($params);
+                    $payment_processor = $payment_processor['values'][0];
+                    $example['payment_processor_id'] = $payment_processor_id;
+                    $example['payment_processor_class_name'] = $payment_processor['class_name'];
+                    $example['payment_processor_billing_mode'] = $payment_processor['billing_mode'];
+                    $example['payment_processor_is_recur'] = $payment_processor['is_recur'];
+
+                    $params = [
+                        'entity' => 'PaymentProcessorType',
+                        'action' => 'get',
+                        'id' => $payment_processor['payment_processor_type_id'],
+                        'sequential' => 1,
+                    ];
+                    $payment_processor_type = $civiRemoteApi->CiviRemote($params);
+                    $payment_processor_type = $payment_processor_type['values'][0];
+                    $example['payment_processor_type_name'] = $payment_processor_type['name'];
+                    $example['payment_processor_type_title'] = $payment_processor_type['title'];
+
+                    $examples[] = $example;
+                }
+            }
+        }
+
+        return $examples;
     }
 
     /**
@@ -54,20 +113,27 @@ class DonationPagesCest
      *
      * @group donation
      * @group dataprovider
+     * @group fnord
      *
+     * @dataprovider contributionPageProvider
      */
-    function AllDonationPages(\Step\Acceptance\ContributionPage $I)
+    function AllDonationPages(\Step\Acceptance\ContributionPage $I, \Codeception\Example $example)
     {
-        $contributionPages = $I->CiviRemote([
-            'entity' => 'Contact',
-            'action' => 'get',
-            'options' => [
-                'limit' => 1,
-            ],
-        ]);
+        $I->amOnPage($example['page_url']);
+        $I->see($example['page_title']);
 
-        $I->amOnPage("civicrm/contribute/transact?reset=1&id={$example['id']}");
-        $I->see($example['title']);
+        // Where there's no default amount & the other amount is required,
+        // contribute the minimum amount.
+        $I->fillAmountFields($example['other_amount']);
+
+        // Complete the required fields.
+        $I->fillCiviContributeFields();
+
+        $I->completeTransaction([
+            'mode' => 'live',
+            'payment_processor_id' => $example['payment_processor_id'],
+            'payment_processor_class_name' => $example['payment_processor_class_name'],
+        ]);
     }
 
     /**
