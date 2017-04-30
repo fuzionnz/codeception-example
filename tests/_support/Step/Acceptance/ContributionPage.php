@@ -17,16 +17,19 @@ class ContributionPage extends \AcceptanceTester
     {
     }
 
-    protected function getPaymentProcessorName($page) {
+    protected function getPaymentProcessorName($page)
+    {
         print_r($page);
         return 'omnipay_PaymentExpress_PxPay';
     }
 
-    protected function getAmountId($page) {
+    protected function getAmountId($page)
+    {
         return 'CIVICRM_QFID_5_8';
     }
 
-    protected function getAmount($page) {
+    protected function getAmount($page)
+    {
         return '50.00';
     }
 
@@ -34,7 +37,8 @@ class ContributionPage extends \AcceptanceTester
      * If there are others we can get them with increased craziness. Should
      * just put a .required on each required input, this JS will do for now.
      */
-    public function fillCiviRequiredFields() {
+    public function fillCiviRequiredFields()
+    {
         $I = $this;
         $I->executeJs("
            CRM.$('input', CRM.$('.crm-marker[title*=\"required\"]').closest('.crm-section')).each(function () { 
@@ -73,7 +77,8 @@ class ContributionPage extends \AcceptanceTester
      *
      * @return boolean
      */
-    public function multiplePaymentProcessorsAvailable() {
+    public function multiplePaymentProcessorsAvailable()
+    {
         $I = $this;
         return $I->executeJs('return CRM.$(\'input[name="payment_processor_id"]\')[0].type !== "hidden";');
     }
@@ -90,8 +95,7 @@ class ContributionPage extends \AcceptanceTester
 
         // If we're in test mode, we need to increment the payment processor ID
         // to select the correct option.
-        if ($details['mode'] == 'test')
-        {
+        if ($details['mode'] == 'test') {
             $details['payment_processor_id']++;
         }
 
@@ -107,8 +111,7 @@ class ContributionPage extends \AcceptanceTester
         $I->waitForJS("return CRM.$.active == 0;", 60);
 
 
-        switch ($details['payment_processor_class_name'])
-        {
+        switch ($details['payment_processor_class_name']) {
             // If running into contribution ID conflicts with Omnipay, can work
             // around contribution_id vs transaction_id conflation by raising
             // mysql -e 'alter table civicrm_contribution auto_increment=1000'
@@ -145,7 +148,7 @@ class ContributionPage extends \AcceptanceTester
                 $I->fillField('#credit_card_number', '4111111111111111');
                 $I->fillField('#cvv2', '111');
                 $I->selectOption('#credit_card_exp_date_M', '12');
-                $I->selectOption('#credit_card_exp_date_Y', date('Y') +  1);
+                $I->selectOption('#credit_card_exp_date_Y', date('Y') + 1);
                 $I->fillCiviRequiredFields();
                 $I->click('#_qf_Main_upload-bottom');
                 $I->click('#_qf_Confirm_next-top');

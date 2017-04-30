@@ -5,6 +5,7 @@ use \Step\Acceptance\ContributionPage;
 
 class DonationPagesCest
 {
+
     private $civicrm_api3;
 
     public function _before()
@@ -41,7 +42,7 @@ class DonationPagesCest
             'action' => 'get',
             'options' => [
                 'limit' => 1,
-            ]
+            ],
         ]);
         codecept_debug($contributionPages);
 
@@ -52,24 +53,25 @@ class DonationPagesCest
                 "title" => "Help Support CiviCRM!",
                 "pp" => "omnipay_PaymentExpress_PxPay",
                 "amt_id" => "CIVICRM_QFID_5_8",
-                "amt" => "50.00"
+                "amt" => "50.00",
             ],
         ];
     }
 
     /**
-     * @param AcceptanceTester $I, \Codeception\Example $example
+     * @param AcceptanceTester $I , \Codeception\Example $example
      *
      * @group donation2
      * @group dataprovider
      */
-    function AllDonationPages(\Step\Acceptance\ContributionPage $I) {
+    function AllDonationPages(\Step\Acceptance\ContributionPage $I)
+    {
         $contributionPages = $I->CiviRemote([
             'entity' => 'Contact',
             'action' => 'get',
             'options' => [
                 'limit' => 1,
-            ]
+            ],
         ]);
 
         $I->amOnPage("civicrm/contribute/transact?reset=1&id={$example['id']}");
@@ -113,16 +115,15 @@ class DonationPagesCest
             'entity' => 'ContributionPage',
             'action' => 'get',
             'is_active' => 1,
-//            'options' => [
-//                'limit' => 1,
-//            ],
+            //            'options' => [
+            //                'limit' => 1,
+            //            ],
         ];
         $pages = $I->CiviRemote($params);
         $examples = [];
 
         // Iterate over pages to pick up payment processors.
-        foreach ($pages['values'] as $page)
-        {
+        foreach ($pages['values'] as $page) {
             $example = [
                 'page_id' => $page['id'],
                 'page_title' => $page['title'],
@@ -135,14 +136,22 @@ class DonationPagesCest
             // or to retrieve options from the DOM.
             // @see CRM-20503
 
-            if (isset($page['payment_processor']))
-            {
+            // Check if "amount block" is active, and whether we got back a price
+            // set from the API.
+            if ($page['amount_block_is_active'] && !isset(page['price_set'])) {
+                if ($page['min_amount']) {
+                    $example['amount_block'] = $page['min_amount'];
+                } else {
+                    $example['amount_block'] = 1;
+                }
+            }
+
+            if (isset($page['payment_processor'])) {
                 // If API returned a single value, make it an array.
                 $processor_ids = (is_array($page['payment_processor'])) ?
-                    $page['payment_processor'] : [ $page['payment_processor'] ];
+                    $page['payment_processor'] : [$page['payment_processor']];
 
-                foreach ($processor_ids as $payment_processor_id)
-                {
+                foreach ($processor_ids as $payment_processor_id) {
                     $params = [
                         'entity' => 'PaymentProcessor',
                         'action' => 'get',
@@ -176,8 +185,7 @@ class DonationPagesCest
         // Alright, we've built a list of contribution pages examples. Let's test them!
         codecept_debug(['$examples' => $examples]);
 
-        foreach ($examples as $example)
-        {
+        foreach ($examples as $example) {
             $I->amOnPage($example['page_url']);
             $I->see($example['page_title']);
 
