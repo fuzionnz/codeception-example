@@ -4,6 +4,11 @@ use Faker\Factory;
 
 namespace Step\Acceptance;
 
+/**
+ * Class ContributionPage
+ *
+ * @package Step\Acceptance
+ */
 class ContributionPage extends \AcceptanceTester
 {
 
@@ -47,8 +52,8 @@ class ContributionPage extends \AcceptanceTester
      */
     public function fillCiviContributeFields()
     {
-        $faker = \Faker\Factory::create();
         $I = $this;
+        $faker = \Faker\Factory::create();
 
         // Some fields are easy to match.
         $I->fillField('.email.required', $faker->safeEmail());
@@ -69,7 +74,7 @@ class ContributionPage extends \AcceptanceTester
         $I->executeJs("
            CRM.$('input', CRM.$('.crm-marker[title*=\"required\"]').closest('.crm-section')).each(function () { 
              if (this.value === '') { 
-               this.value = 'Dummy'; 
+               this.value = '-'; 
              } 
            });
            CRM.$('select', CRM.$('.crm-marker[title*=\"required\"]').closest('.crm-section')).each(function () { 
@@ -144,7 +149,7 @@ class ContributionPage extends \AcceptanceTester
                 }
                 $I->fillField('#credit_card_number', '4111111111111111');
                 $I->fillField('#cvv2', '111');
-                $I->selectOption('#credit_card_exp_date_M', '12');
+                $I->selectOption('#credit_card_exp_date_M', 12);
                 $I->selectOption('#credit_card_exp_date_Y', date('Y') + 1);
                 $I->fillCiviRequiredFields();
                 $I->click('#_qf_Main_upload-bottom');

@@ -1,3 +1,4 @@
+.DS_Store
 codeception.yml
 tests/*.suite.yml
 tests/_output/

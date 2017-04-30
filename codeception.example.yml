@@ -26,8 +26,8 @@ modules:
             admin_password: 'some.adminpass'
             demo_username:  'some.regularuser'
             demo_password:  'some.regularpass'
-        CiviHelper:
-            api_key: ''
-            site_key: ''
-            url: 'http://localhost/sites/all/modules/civicrm/extern/rest.php'
+        CiviRemote:
+            api_key: APIKEY
+            site_key: SEKRITKEY
+            url: http://civicrm.dev/sites/all/modules/civicrm/extern/rest.php
 

@@ -33,11 +33,11 @@ class CiviRemote extends \Codeception\Module
     public function CiviRemote($params) {
         $config = \Codeception\Configuration::config();
         $creds = [
-            'api_key' => $config['modules']['config']['CiviHelper']['api_key'],
-            'key' => $config['modules']['config']['CiviHelper']['site_key'],
+            'api_key' => $config['modules']['config']['CiviRemote']['api_key'],
+            'key' => $config['modules']['config']['CiviRemote']['site_key'],
         ];
         $client = new Client([
-            'base_uri' => $config['modules']['config']['CiviHelper']['url'],
+            'base_uri' => $config['modules']['config']['CiviRemote']['url'],
         ]);
 
         $params = array_merge($creds, $params);
