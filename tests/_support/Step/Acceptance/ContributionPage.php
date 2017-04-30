@@ -33,6 +33,15 @@ class ContributionPage extends \AcceptanceTester
     }
 
     /**
+     * Disable the "You have unsaved changes" warning.
+     */
+    public function disableWarningForUnsavedChanges()
+    {
+        $I = $this;
+        $I->executeJs('window.onbeforeunload = null;');
+    }
+
+    /**
      * Fill amount fields. May need to be filled out; currently assumes most
      * donation forms have a default option selected.
      *
@@ -50,6 +59,21 @@ class ContributionPage extends \AcceptanceTester
      * Fill essential CiviCRM Contribute fields (first name, last name, email)
      * using Faker data.
      */
+    public function fillCiviEventFields()
+    {
+        $I = $this;
+        $faker = \Faker\Factory::create();
+
+        // @TODO Consistent selectors with Contribute page.
+        $I->fillField('#email-Primary', $faker->safeEmail());
+        $I->executeJS("CRM.$('input[id*=\"first_name\"]').val(" . json_encode($faker->firstName()) . ");");
+        $I->executeJS("CRM.$('input[id*=\"last_name\"]').val(" . json_encode($faker->lastName()) . ");");
+    }
+
+    /**
+     * Fill essential CiviCRM Contribute fields (first name, last name, email)
+     * using Faker data.
+     */
     public function fillCiviContributeFields()
     {
         $I = $this;
@@ -60,8 +84,8 @@ class ContributionPage extends \AcceptanceTester
 
         // Some are slightly trickier. Required ID could be got from API, or we
         // could just add a .first-name class etc to Civi's forms.
-        $I->executeJS("CRM.$('input[id*=\"_first_name\"]').val(" . json_encode($faker->firstName()) . ");");
-        $I->executeJS("CRM.$('input[id*=\"_last_name\"]').val(" . json_encode($faker->lastName()) . ");");
+        $I->executeJS("CRM.$('input[id*=\"first_name\"]').val(" . json_encode($faker->firstName()) . ");");
+        $I->executeJS("CRM.$('input[id*=\"last_name\"]').val(" . json_encode($faker->lastName()) . ");");
     }
 
     /**
@@ -108,25 +132,23 @@ class ContributionPage extends \AcceptanceTester
             $payment_processor_radio = "#CIVICRM_QFID_{$details['payment_processor_id']}_payment_processor_id";
             $I->seeElement($payment_processor_radio);
             $I->click($payment_processor_radio);
+            $I->waitForJS("return CRM.$.active == 0;", 60);
         }
-
-        // May need a pause here to allow checkout to load?
-        $I->waitForJS("return CRM.$.active == 0;", 60);
 
         switch ($details['payment_processor_class_name']) {
             // If running into contribution ID conflicts with Omnipay, can work
             // around contribution_id vs transaction_id conflation by raising
             // mysql -e 'alter table civicrm_contribution auto_increment=1000'
-            // @see
+            // @see https://github.com/eileenmcnaughton/nz.co.fuzion.omnipaymultiprocessor/issues/26
             case 'Payment_OmnipayMultiProcessor':
             case 'omnipay_PaymentExpress_PxPay':
                 // "Confirm Contribution"
-                $I->click('#_qf_Main_upload-bottom');
+                $I->click('.crm-form-submit.default');
 
-                // We are on the confirm page now.
-                // @TODO This is a config option?
-                $I->see('Please verify the information below carefully.');
-                $I->click('#_qf_Confirm_next-top');
+                if (!empty($details['has_confirm'])) {
+                    $I->see('Please verify the information below carefully.');
+                    $I->click('.crm-form-submit.default');
+                }
 
                 // PxPay checkout.
                 $I->fillField('input[name=CardNumber]', '4111111111111111');
@@ -152,14 +174,10 @@ class ContributionPage extends \AcceptanceTester
                 $I->selectOption('#credit_card_exp_date_M', 12);
                 $I->selectOption('#credit_card_exp_date_Y', date('Y') + 1);
                 $I->fillCiviRequiredFields();
-                $I->click('#_qf_Main_upload-bottom');
-                $I->click('#_qf_Confirm_next-top');
+                if (!empty($details['has_confirm'])) {
+                    $I->click('.crm-form-submit.default');
+                }
+                $I->click('.crm-form-submit.default');
         }
     }
-
-    /**
-     * Clear the CiviCRM "you are leaving the page!" message.
-     */
-    // public function
-
 }

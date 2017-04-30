@@ -20,27 +20,24 @@ class DonationPagesCest
     }
 
     /**
-     * Example dataProvider for contribution pages.
+     * Provide all active contribution pages.
      *
      * @return array
      */
     protected function contributionPageProvider()
     {
         // I'd love to be able to initialise this in _before() or _inject(),
-        // but it seems like dataProviders are called before that ...
+        // but it seems like dataProviders are called before that ... so this is
+        // a bit clunky.
         $config = \Codeception\Configuration::config();
         $civiRemoteApi = new \CiviRemoteApi($config['modules']['config']['CiviRemoteApi']);
-        $res = $civiRemoteApi->CiviRemote([
-            'entity' => 'Contact',
-            'action' => 'get',
-        ]);
 
         $params = [
             'entity' => 'ContributionPage',
             'action' => 'get',
             'is_active' => 1,
             'options' => [
-//                'limit' => 1,
+              // 'limit' => 1,
             ],
         ];
         $pages = $civiRemoteApi->CiviRemote($params);
@@ -52,6 +49,7 @@ class DonationPagesCest
                 'page_id' => $page['id'],
                 'page_title' => $page['title'],
                 'page_url' => "civicrm/contribute/transact?reset=1&id={$page['id']}",
+                'confirm' => !empty($page['is_confirm_enabled']),
             ];
 
             // CiviCRM does not make price set data available to Contribute API?
@@ -62,13 +60,11 @@ class DonationPagesCest
 
             // Check if "amount block" is active, and whether we got back a price
             // set from the API.
-            //            if ($page['amount_block_is_active']) {
             if (isset($page['min_amount']) && $page['min_amount'] > 0) {
                 $example['other_amount'] = $page['min_amount'];
             } else {
                 $example['other_amount'] = 1;
             }
-            //            }
 
             if (isset($page['payment_processor'])) {
                 // If API returned a single value, make it an array.
@@ -122,11 +118,13 @@ class DonationPagesCest
         $I->amOnPage($example['page_url']);
         $I->see($example['page_title']);
 
+        $I->disableWarningForUnsavedChanges();
+
         // Where there's no default amount & the other amount is required,
         // contribute the minimum amount.
         $I->fillAmountFields($example['other_amount']);
 
-        // Complete the required fields.
+        // Complete required fields.
         $I->fillCiviContributeFields();
 
         $I->completeTransaction([
@@ -137,8 +135,8 @@ class DonationPagesCest
     }
 
     /**
-     * @example { "id": "1", "title": "Help Support CiviCRM!", "pp": "omnipay_PaymentExpress_PxPay", "amt_id": "CIVICRM_QFID_5_8", "amt": "50.00" }
-     * @example { "id": "2", "title": "Help Support CiviCRM!", "pp": "omnipay_PaymentExpress_PxPay", "amt_id": "CIVICRM_QFID_4_6", "amt": "10.00" }
+     * @example { "id": "1", "title": "Help Support CiviCRM!", "payment_processor_id": 3, "payment_processor_class_name": "omnipay_PaymentExpress_PxPay", "amt_id": "CIVICRM_QFID_2_4", "amt": "50.00" }
+     * @example { "id": "2", "title": "Member Signup and Renewal", "payment_processor_id": 1, "payment_processor_class_name": "Payment_Dummy", "amt_id": "CIVICRM_QFID_11_8", "amt": "10.00" }
      *
      * @param AcceptanceTester $I, \Codeception\Example $example
      *
@@ -148,10 +146,18 @@ class DonationPagesCest
     function AllDonationPagesByExample(\Step\Acceptance\ContributionPage $I, \Codeception\Example $example) {
         $I->amOnPage("civicrm/contribute/transact?reset=1&id={$example['id']}");
         $I->see($example['title']);
+
+        $I->disableWarningForUnsavedChanges();
+
         $I->click('#' . $example['amt_id']);
+
         $I->fillCiviContributeFields();
 
-        $I->wait(10);
+        $I->completeTransaction([
+            'mode' => 'live',
+            'payment_processor_id' => $example['payment_processor_id'],
+            'payment_processor_class_name' => $example['payment_processor_class_name'],
+        ]);
     }
 
     /**
