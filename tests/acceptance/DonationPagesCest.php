@@ -115,6 +115,7 @@ class DonationPagesCest
             'entity' => 'ContributionPage',
             'action' => 'get',
             'is_active' => 1,
+            // 'id' => 3,
             //            'options' => [
             //                'limit' => 1,
             //            ],
@@ -138,13 +139,13 @@ class DonationPagesCest
 
             // Check if "amount block" is active, and whether we got back a price
             // set from the API.
-            if ($page['amount_block_is_active'] && !isset(page['price_set'])) {
-                if ($page['min_amount']) {
-                    $example['amount_block'] = $page['min_amount'];
-                } else {
-                    $example['amount_block'] = 1;
-                }
+//            if ($page['amount_block_is_active']) {
+            if (isset($page['min_amount']) && $page['min_amount'] > 0) {
+                $example['other_amount'] = $page['min_amount'];
+            } else {
+                $example['other_amount'] = 1;
             }
+//            }
 
             if (isset($page['payment_processor'])) {
                 // If API returned a single value, make it an array.
@@ -189,6 +190,10 @@ class DonationPagesCest
             $I->amOnPage($example['page_url']);
             $I->see($example['page_title']);
 
+            // Where there's no default amount & the other amount is required,
+            // contribute the minimum amount.
+            $I->fillAmountFields($example['other_amount']);
+
             // Complete the required fields.
             $I->fillCiviContributeFields();
 
@@ -200,7 +205,6 @@ class DonationPagesCest
 
             // Because we're not calling this method repeatedly, need to reset
             // session before proceeding.
-
         }
 
         // required_values is the civicrm field names (from civicrm pages)

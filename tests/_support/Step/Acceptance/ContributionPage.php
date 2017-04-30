@@ -8,29 +8,55 @@ class ContributionPage extends \AcceptanceTester
 {
 
     /**
-     * I'd like this to be a dataProvider ... but don't yet know how to pass
-     * a working CiviCRM API config into a dataprovider.
-     *
-     * @return array
+     * Detect whether there is a required "other" amount field.
      */
-    function getContributionPages()
+    public function detectOtherAmountIsRequired()
     {
+        $I = $this;
+        return $I->executeJs('return CRM.$(\'.other_amount-content input.required\').length !== 0;');
     }
 
-    protected function getPaymentProcessorName($page)
+    /**
+     * Detect if contribution page has multiple processors available.
+     *
+     * @return boolean
+     */
+    public function detectMultiplePaymentProcessorsAvailable()
     {
-        print_r($page);
-        return 'omnipay_PaymentExpress_PxPay';
+        $I = $this;
+        return $I->executeJs('return CRM.$(\'input[name="payment_processor_id"]\')[0].type !== "hidden";');
     }
 
-    protected function getAmountId($page)
+    /**
+     * Fill amount fields. May need to be filled out; currently assumes most
+     * donation forms have a default option selected.
+     *
+     * @param $amount
+     */
+    public function fillAmountFields($amount)
     {
-        return 'CIVICRM_QFID_5_8';
+        $I = $this;
+        if ($I->detectOtherAmountIsRequired()) {
+            $I->fillField('.other_amount-content input.required', $amount);
+        }
     }
 
-    protected function getAmount($page)
+    /**
+     * Fill essential CiviCRM Contribute fields (first name, last name, email)
+     * using Faker data.
+     */
+    public function fillCiviContributeFields()
     {
-        return '50.00';
+        $faker = \Faker\Factory::create();
+        $I = $this;
+
+        // Some fields are easy to match.
+        $I->fillField('.email.required', $faker->safeEmail());
+
+        // Some are slightly trickier. Required ID could be got from API, or we
+        // could just add a .first-name class etc to Civi's forms.
+        $I->executeJS("CRM.$('input[id*=\"_first_name\"]').val(" . json_encode($faker->firstName()) . ");");
+        $I->executeJS("CRM.$('input[id*=\"_last_name\"]').val(" . json_encode($faker->lastName()) . ");");
     }
 
     /**
@@ -55,36 +81,8 @@ class ContributionPage extends \AcceptanceTester
     }
 
     /**
-     * Fill essential CiviCRM Contribute fields (first name, last name, email)
-     * using Faker data.
-     */
-    public function fillCiviContributeFields()
-    {
-        $faker = \Faker\Factory::create();
-        $I = $this;
-
-        // Some fields are easy to match.
-        $I->fillField('.email.required', $faker->safeEmail());
-
-        // Some are slightly trickier. Required ID could be got from API, or we
-        // could just add a .first-name class etc to Civi's forms.
-        $I->executeJS("CRM.$('input[id*=\"_first_name\"]').val(" . json_encode($faker->firstName()) . ");");
-        $I->executeJS("CRM.$('input[id*=\"_last_name\"]').val(" . json_encode($faker->lastName()) . ");");
-    }
-
-    /**
-     * Detect if contribution page has multiple processors available.
-     *
-     * @return boolean
-     */
-    public function multiplePaymentProcessorsAvailable()
-    {
-        $I = $this;
-        return $I->executeJs('return CRM.$(\'input[name="payment_processor_id"]\')[0].type !== "hidden";');
-    }
-
-    /**
      * Complete a checkout using a specific payment processor type.
+     * This may warrant its own Page helper.
      *
      * @param array $details
      */
@@ -101,7 +99,7 @@ class ContributionPage extends \AcceptanceTester
 
         // If there's only one payment processor on the current page, it's a
         // hidden element. If not, then we need to select.
-        if ($I->multiplePaymentProcessorsAvailable()) {
+        if ($I->detectMultiplePaymentProcessorsAvailable()) {
             $payment_processor_radio = "#CIVICRM_QFID_{$details['payment_processor_id']}_payment_processor_id";
             $I->seeElement($payment_processor_radio);
             $I->click($payment_processor_radio);
@@ -109,7 +107,6 @@ class ContributionPage extends \AcceptanceTester
 
         // May need a pause here to allow checkout to load?
         $I->waitForJS("return CRM.$.active == 0;", 60);
-
 
         switch ($details['payment_processor_class_name']) {
             // If running into contribution ID conflicts with Omnipay, can work
