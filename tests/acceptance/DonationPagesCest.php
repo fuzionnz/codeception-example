@@ -5,8 +5,7 @@ use \Step\Acceptance\ContributionPage;
 
 class DonationPagesCest
 {
-
-    private $civicrm_api3;
+    protected $civiRemoteApi;
 
     public function _before()
     {
@@ -16,27 +15,19 @@ class DonationPagesCest
     {
     }
 
-    // tests
-    public function tryToTest(AcceptanceTester $I)
+    public function _inject()
     {
+        $config = \Codeception\Configuration::config();
+        $this->civiRemoteApi = new \CiviRemoteApi($config['modules']['config']['CiviRemoteApi']);
     }
 
     /**
-     * @return array
+     * This is an example dataProvider for contribution pages.
      *
+     * @return array
      */
     protected function contributionPageProvider(AcceptanceTester $I)
     {
-        //    $client = $this->civicrm_api3;
-        //    print_r($client);
-        //    // Get the contribution pages which are enabled.
-        //    $client->ContributionPage->Get([
-        //      'is_active' => 1,
-        //      'options' => [
-        //        'sequential' => 1,
-        //        'limit' => 1,
-        //      ],
-        //    ]);
         $contributionPages = $I->CiviRemote([
             'entity' => 'Contact',
             'action' => 'get',
@@ -44,9 +35,9 @@ class DonationPagesCest
                 'limit' => 1,
             ],
         ]);
-        codecept_debug($contributionPages);
 
-        // Convert to this format.
+        // magic here ...
+
         return [
             [
                 "id" => "1",
@@ -61,8 +52,9 @@ class DonationPagesCest
     /**
      * @param AcceptanceTester $I , \Codeception\Example $example
      *
-     * @group donation2
+     * @group donation
      * @group dataprovider
+     *
      */
     function AllDonationPages(\Step\Acceptance\ContributionPage $I)
     {

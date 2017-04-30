@@ -7,3 +7,26 @@ modules:
     enabled:
         - Asserts
         - \Helper\Unit
+        - ConfigHelper
+        - CiviHelper
+        - \Helper\CiviRemote
+        - REST:
+            depends: PhpBrowser
+            url: http://civicrm.dev/sites/all/modules/civicrm/extern/rest.php
+    config:
+        Db:
+            dsn: ''
+            user: ''
+            password: ''
+            dump: tests/_data/dump.sql
+        ConfigHelper:
+            site_key:       'SITEKEY'
+            admin_apikey:   'APIKEY'
+            admin_username: 'some.administrator'
+            admin_password: 'some.adminpass'
+            demo_username:  'some.regularuser'
+            demo_password:  'some.regularpass'
+        CiviRemote:
+            api_key: APIKEY
+            site_key: SEKRITKEY
+            url: http://civicrm.dev/sites/all/modules/civicrm/extern/rest.php

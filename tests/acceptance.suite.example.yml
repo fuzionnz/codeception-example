@@ -16,5 +16,5 @@ modules:
     config:
         WebDriver:
             url: 'http://example.dev'
-            browser: 'firefox'
+            browser: 'chrome'
             window_size: '1024x768'

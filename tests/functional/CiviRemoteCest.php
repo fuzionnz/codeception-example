@@ -40,18 +40,20 @@ class CiviRemoteCest
   public function testCiviRemoteAPI(AcceptanceTester $I)
   {
     // Ensure we have some contacts in our DB.
-    $civicrm_api = $I->CiviApi();
-    $result = $civicrm_api->Contact->Get([
-      'contact_type' => 'Individual',
-      'options' => [
-        'limit' => 1,
-        'sequential' => 1,
-      ],
+    $result = $I->CiviRemote([
+        'entity' => 'contact',
+        'action' => 'get',
+        'contact_type' => 'Individual',
+        'options' => [
+            'limit' => 1,
+            'sequential' => 1,
+        ],
     ]);
-    $I->assertEquals(true, $result, 'Successful contact.get.');
-    foreach ($civicrm_api->values as $contact) {
-      $I->assertInternalType('object', $contact);
-    }
+    $I->assertEquals(0, $result['is_error']);
+
+    // Why is it not sequential?
+    $contact = reset($result['values']);
+    $I->assertArrayHasKey('display_name', $contact);
   }
 
 }
