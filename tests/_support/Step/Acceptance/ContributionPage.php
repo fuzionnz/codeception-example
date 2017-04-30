@@ -69,6 +69,16 @@ class ContributionPage extends \AcceptanceTester
     }
 
     /**
+     * Detect if contribution page has multiple processors available.
+     *
+     * @return boolean
+     */
+    public function multiplePaymentProcessorsAvailable() {
+        $I = $this;
+        return $I->executeJs('return CRM.$(\'input[name="payment_processor_id"]\')[0].type !== "hidden";');
+    }
+
+    /**
      * Complete a checkout using a specific payment processor type.
      *
      * @param array $details
@@ -85,11 +95,17 @@ class ContributionPage extends \AcceptanceTester
             $details['payment_processor_id']++;
         }
 
-        // Select the payment method.
-        $I->click("#CIVICRM_QFID_{$details['payment_processor_id']}_payment_processor_id");
+        // If there's only one payment processor on the current page, it's a
+        // hidden element. If not, then we need to select.
+        if ($I->multiplePaymentProcessorsAvailable()) {
+            $payment_processor_radio = "#CIVICRM_QFID_{$details['payment_processor_id']}_payment_processor_id";
+            $I->seeElement($payment_processor_radio);
+            $I->click($payment_processor_radio);
+        }
 
         // May need a pause here to allow checkout to load?
-        $I->wait(2);
+        $I->waitForJS("return CRM.$.active == 0;", 60);
+
 
         switch ($details['payment_processor_class_name'])
         {
@@ -120,8 +136,12 @@ class ContributionPage extends \AcceptanceTester
 
             case 'Dummy':
             default:
-                codecept_debug(['$details' => $details]);
-                $I->selectOption('#credit_card_type', 'Visa');
+                // The credit card type option is a required <select> when there
+                // are multiple processors, but automatic when only one.
+                $cc_type_select = $I->executeJs('return CRM.$(\'select#credit_card_type:visible\').length;');
+                if ($cc_type_select) {
+                    $I->selectOption('#credit_card_type', 'Visa');
+                }
                 $I->fillField('#credit_card_number', '4111111111111111');
                 $I->fillField('#cvv2', '111');
                 $I->selectOption('#credit_card_exp_date_M', '12');
