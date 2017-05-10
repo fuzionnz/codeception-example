@@ -34,7 +34,16 @@ Let's get some code generated in here.
 
 `tests/_support/Step/Acceptance/ContributionPage.php`
 
-This is a Codeception Page Helper - it wraps up common functionality for a page (ish). Helper methods like `detectOtherAmountIsRequired`, `etectOtherAmountIsRequired`, `disableWarningForUnsavedChanges`, `fillAmountFields`, `fillCiviEventFields`, `fillCiviContributeFields`, `fillCiviRequiredFields`, `completeTransaction`.
+This is a Codeception Page Helper - it wraps up common functionality for a page (ish). Helper methods like 
+
+* `detectOtherAmountIsRequired`
+* `detectOtherAmountIsRequired`
+* `disableWarningForUnsavedChanges`
+* `fillAmountFields`
+* `fillCiviEventFields`
+* `fillCiviContributeFields`
+* `fillCiviRequiredFields`
+* `completeTransaction`
 
 Most of those are fairly explanator by their names.
 

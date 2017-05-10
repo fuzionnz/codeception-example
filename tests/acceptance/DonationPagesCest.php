@@ -113,7 +113,7 @@ class DonationPagesCest
      *
      * @dataprovider contributionPageProvider
      */
-    function AllDonationPages(\Step\Acceptance\ContributionPage $I, \Codeception\Example $example)
+    public function AllDonationPages(\Step\Acceptance\ContributionPage $I, \Codeception\Example $example)
     {
         $I->amOnPage($example['page_url']);
         $I->see($example['page_title']);
