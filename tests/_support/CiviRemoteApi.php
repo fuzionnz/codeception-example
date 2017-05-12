@@ -20,11 +20,10 @@ use GuzzleHttp\Client;
  */
 class CiviRemoteApi extends \Codeception\Module
 {
-    protected $foo = 'foo';
 
     public function __construct()
     {
-        $this->foo = 'bar';
+
     }
 
     /**

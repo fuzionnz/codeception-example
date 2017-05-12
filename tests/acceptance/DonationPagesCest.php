@@ -7,8 +7,9 @@ class DonationPagesCest
 {
     protected $civiRemoteApi;
 
-    public function _before()
+    public function _before(AcceptanceTester $I)
     {
+//        $I->switchToWindow();
     }
 
     public function _after(AcceptanceTester $I)
