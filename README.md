@@ -68,3 +68,19 @@ This is an acceptance test which utilises the above Codeception functionality.
 `AllDonationPagesByExample` demonstrates doing similarly, but uses the `@example` annotation instead to provide test examples.
 
 `DonationPages` is possibly an older example.
+
+### Special Challenges
+
+Things in Civi that might need special attention ...
+
+#### Select2
+
+Select2 can be a bit of a turd. Preferably we should test it as it behaves, so don't pick a fight with it unless it starts something. If you do run into issues with it, you can turn it back into a regular select with this JS:
+
+    CRM.$('.crm-select2').select2('destroy');
+    
+This needs to be run after the select has been select2'd - so wait until you need to modify that element to do so. If the element is an entity reference field, it will need different treatment. Good luck and take notes!
+
+#### Modal dialogs
+
+Sometimes you need to wait for a modal dialog to complete loading. (Chris needs to find the process for this somewhere and finish writing this.)
