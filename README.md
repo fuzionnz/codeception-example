@@ -69,7 +69,7 @@ This is an acceptance test which utilises the above Codeception functionality.
 
 `DonationPages` is possibly an older example.
 
-### Special Challenges
+### Special Notes
 
 Things in Civi that might need special attention ...
 
@@ -84,3 +84,17 @@ This needs to be run after the select has been select2'd - so wait until you nee
 #### Modal dialogs
 
 Sometimes you need to wait for a modal dialog to complete loading. (Chris needs to find the process for this somewhere and finish writing this.)
+
+#### I like to watch!
+
+If you don't see the browser executing your wondrous test, it's probably running in the background. ALT+SHIFT+TAB should get it on screen, or you can modify the test to focus the browser window:
+
+    class SomeBrowserCest
+    {
+        public function _before(AcceptanceTester $I)
+        {
+            // This will switch to the browser for every test in this Cest. 
+            // For just one test, put this line at the top of the test instead!
+            $I->switchToWindow();
+        }
+    
