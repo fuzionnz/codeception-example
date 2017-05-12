@@ -1,6 +1,6 @@
 {
     "require": {
-        "codeception/codeception": "*",
+        "codeception/codeception": "~2.2",
         "fuzionnz/codeception-drupal-drush": "dev-develop",
         "fuzionnz/codeception-config-helper": "dev-master",
         "fuzionnz/codeception-drupal-pages": "~0.2",
@@ -17,8 +17,8 @@
             "url": "https://github.com/fuzionnz/codeception-drupal-pages"
         },
         {
-            "type": "vcs",
-            "url": "https://github.com/fuzionnz/codeception-drupal-drush"
+            "type": "path",
+            "url": "/Users/chris/Documents/codeception-drupal-drush"
         },
         {
             "type": "vcs",
