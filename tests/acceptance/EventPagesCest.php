@@ -96,10 +96,10 @@ class EventPagesCest
     /**
      * @param AcceptanceTester $I , \Codeception\Example $example
      *
-     * @group dataprovider
+     * @dataprovider eventPageProvider
+     *
      * @group event
      *
-     * @dataprovider eventPageProvider
      */
     function EventPages(\Step\Acceptance\ContributionPage $I, \Codeception\Example $example)
     {

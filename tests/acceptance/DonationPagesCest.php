@@ -24,7 +24,7 @@ class DonationPagesCest
      *
      * @return array
      */
-    protected function contributionPageProvider()
+    protected static function contributionPageProvider()
     {
         // I'd love to be able to initialise this in _before() or _inject(),
         // but it seems like dataProviders are called before that ... so this is
@@ -107,11 +107,10 @@ class DonationPagesCest
     /**
      * @param AcceptanceTester $I , \Codeception\Example $example
      *
-     * @group donation
-     * @group dataprovider
-     * @group fnord
-     *
      * @dataprovider contributionPageProvider
+     *
+     * @group donation
+     * @group fnord
      */
     public function AllDonationPages(\Step\Acceptance\ContributionPage $I, \Codeception\Example $example)
     {
