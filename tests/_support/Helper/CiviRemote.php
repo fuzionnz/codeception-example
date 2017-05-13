@@ -49,7 +49,13 @@ class CiviRemote extends \Codeception\Module
         // Force to an array when decoding.
         $data = json_decode($json, true);
         if (json_last_error() != JSON_ERROR_NONE) {
-            throw new \Exception('Error decoding CiviRemote response (JSON error #' . json_last_error() . ')');
+            // http://php.net/manual/en/json.constants.php
+            $msg = 'Error decoding CiviRemote response (JSON error #' .
+                json_last_error() . ': ' .
+                json_last_error_msg() .
+                ')';
+            codecept_debug('JSON: ' . $json);
+            throw new \Exception($msg);
         }
         return (array) $data;
     }
