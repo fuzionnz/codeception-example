@@ -19,15 +19,16 @@ class CiviRemoteCest
      * @group api
      */
     public function basicApiException(AcceptanceTester $I) {
-/*
-      $I->expectException(\CiviCRM_Exception::class, function () {
-        $outlandish_id = -999;
-        $contact = $I->civicrm_api3('Contact', 'getSingle', [
-          'id' => $outlandish_id,
-          'sequential' => 1
-        ]);
-      });
-*/
+        $I->expectException(\PHPUnit_Framework_Exception::class, function () {
+            $outlandish_id = -999;
+            $contact = $I->CiviRemote([
+                'entity' => 'Contact',
+                'action' => 'getSingle',
+                'contact_type' => 'Individual',
+                'id' => $outlandish_id,
+                'sequential' => 1
+            ]);
+        });
     }
 
   /**
@@ -47,7 +48,7 @@ class CiviRemoteCest
             'sequential' => 1,
         ],
     ]);
-    $I->assertEquals(0, $result['is_error']);
+    $I->assertEquals(0, $result['is_error'], 'Result is not an error.');
 
     // Why is it not sequential?
     $contact = reset($result['values']);

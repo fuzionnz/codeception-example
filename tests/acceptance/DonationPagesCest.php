@@ -31,7 +31,6 @@ class DonationPagesCest
         // but it seems like dataProviders are called before that ... so this is
         // a bit clunky.
         $config = \Codeception\Configuration::config();
-        $civiRemoteApi = new \CiviRemoteApi($config['modules']['config']['CiviRemoteApi']);
 
         $params = [
             'entity' => 'ContributionPage',
@@ -41,6 +40,11 @@ class DonationPagesCest
               // 'limit' => 1,
             ],
         ];
+
+        // @TODO Use \Helper\CiviRemote class instead.
+        // Understand how to access AcceptanceTester in DataProvider, or make
+        // class available to both usages.
+        $civiRemoteApi = new \CiviRemoteApi($config['modules']['config']['CiviRemoteApi']);
         $pages = $civiRemoteApi->CiviRemote($params);
         $examples = [];
 
