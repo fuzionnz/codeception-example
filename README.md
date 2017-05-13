@@ -98,3 +98,4 @@ If you don't see the browser executing your wondrous test, it's probably running
             $I->switchToWindow();
         }
     
+    // ...

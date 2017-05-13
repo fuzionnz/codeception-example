@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * A functional test to demonstrate using the CiviRemote helper module.
+ */
 class CiviRemoteCest
 {
     public function _before(AcceptanceTester $I)
@@ -7,11 +10,6 @@ class CiviRemoteCest
     }
 
     public function _after(AcceptanceTester $I)
-    {
-    }
-
-    // tests
-    public function tryToTest(AcceptanceTester $I)
     {
     }
 
