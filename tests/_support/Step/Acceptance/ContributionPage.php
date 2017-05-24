@@ -161,6 +161,20 @@ class ContributionPage extends \AcceptanceTester
 
                 break;
 
+            case 'Payment_Paystation':
+                // "Confirm Contribution"
+                $I->fillCiviRequiredFields();
+                $I->click('.crm-form-submit.default');
+                $I->click('#card_type_MASTERCARD');
+                $I->fillField('#cardnumber', '5123456789012346');
+                $I->fillField('#cardverificationcode', '123');
+                $I->selectOption('#expirymonth', date('m'));
+                $I->selectOption('#expiryyear', date('Y'));
+                $I->fillField('#cardholder', $faker->name());
+                $I->click('#pay_button');
+                // $I->see($details['amt'], '.amount_display-group');
+                break;
+
             case 'Dummy':
             default:
                 // The credit card type option is a required <select> when there
