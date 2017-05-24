@@ -22,6 +22,15 @@ class ContributionPage extends \AcceptanceTester
     }
 
     /**
+     * Detect whether there is a required "username" field.
+     */
+    public function detectUsernameIsRequired()
+    {
+        $I = $this;
+        return $I->executeJs('return CRM.$(\'.other_amount-content input.required\').length !== 0;');
+    }
+
+    /**
      * Detect if contribution page has multiple processors available.
      *
      * @return boolean
@@ -106,6 +115,10 @@ class ContributionPage extends \AcceptanceTester
                this.selectedIndex = 3; 
              } 
            });
+        ");
+
+        $I->executeJs("
+            CRM.$('input#cms_name.required').val('testuser.' + Date.now());
         ");
     }
 
