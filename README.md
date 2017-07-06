@@ -1,5 +1,11 @@
 # Codeception Example
 
+## Testing
+
+We're starting to test with <a href="https://browserstack.com">BrowserStack</a> and <a href="https://codeception.com">Codeception</a>, which gives us access to a wide variety of browser configurations using magic cloud goodness! Thanks BrowserStack :)
+
+<a href="https://browserstack.com"><img src="https://resources.fudev.co.nz/browserstack-logo.png" height="80px" /></a>
+
 ## Getting started
 
 ## Configuration
