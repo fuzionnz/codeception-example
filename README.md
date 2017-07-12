@@ -34,18 +34,16 @@ Let's get some code generated in here.
 
 `tests/_support/Step/Acceptance/ContributionPage.php`
 
-This is a Codeception Page Helper - it wraps up common functionality for a page (ish). Helper methods like 
+This is a Codeception Page Helper - it wraps up common functionality for a page (ish). Helper methods are things like - 
 
-* `detectOtherAmountIsRequired`
-* `detectOtherAmountIsRequired`
-* `disableWarningForUnsavedChanges`
-* `fillAmountFields`
-* `fillCiviEventFields`
-* `fillCiviContributeFields`
-* `fillCiviRequiredFields`
-* `completeTransaction`
-
-Most of those are fairly explanator by their names.
+* `detectMultiplePaymentProcessorsAvailable` - detect if page has >1 payment providers (js).
+* `detectOtherAmountIsRequired` - detect if an Other amount is required (js).
+* `disableWarningForUnsavedChanges` - this disables the javascript "do you want to leave the page" warning (js).
+* `fillAmountFields` - enters an amount in "other" if test detects that this field is required and empty.
+* `fillCiviEventFields` - fill essential Event fields.
+* `fillCiviContributeFields` - fill essential Contribute fields.
+* `fillCiviRequiredFields` - ensure dummy values are placed in required fields.
+* `completeTransaction` - complete payment process (via various providers).
 
 `completeTransaction` uses a switch statement to branch based on the payment providers. This would be better restructured into separate helpers loaded based on the payment provider. Want to help me understand DI? I'd love to :)
  
@@ -56,6 +54,8 @@ This is a Codeception Module - it provides additional methods to the Acceptance 
 A simple demo of this is available in `tests/functional/CiviRemoteCest.php`.
 
 There are a couple of additional "decoy" helpers, `CiviHelper` and `CiviRemoteAPIHelper`. Ignore these - they are just early efforts and should be removed.
+
+Currently, `\Helper\CiviRemote` works as a Codeception module (provides `$I->CiviRemote()` to AcceptanceTester class), and `CiviRemote` is used from dataproviders. The two should be combined.
 
 `tests/acceptance/DonationPagesCest.php`
 

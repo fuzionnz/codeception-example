@@ -3,7 +3,7 @@
 use \Codeception\Example;
 use \Step\Acceptance\ContributionPage;
 
-class DonationPagesCest
+class ContributionPagesCest
 {
     protected $civiRemoteApi;
 
@@ -60,7 +60,7 @@ class DonationPagesCest
             // CiviCRM does not make price set data available to Contribute API?
             // If we want to test beyond the default price option, we need an
             // extension adding data via hook_civicrm_apiWrappers() or to
-            // or to retrieve options from the DOM.
+            // retrieve options from the DOM 😱
             // @see CRM-20503
 
             // Check if "amount block" is active, and whether we got back a price
