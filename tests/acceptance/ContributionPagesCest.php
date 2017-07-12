@@ -119,6 +119,8 @@ class DonationPagesCest
      */
     public function AllDonationPages(\Step\Acceptance\ContributionPage $I, \Codeception\Example $example)
     {
+        // $I->focus();
+
         $I->amOnPage($example['page_url']);
         $I->see($example['page_title']);
 

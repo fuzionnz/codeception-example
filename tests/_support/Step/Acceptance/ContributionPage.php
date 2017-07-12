@@ -9,7 +9,7 @@ namespace Step\Acceptance;
  *
  * @package Step\Acceptance
  */
-class ContributionPage extends \AcceptanceTester
+class ContributionPage extends CivicrmPage
 {
 
     /**
@@ -33,15 +33,6 @@ class ContributionPage extends \AcceptanceTester
     }
 
     /**
-     * Disable the "You have unsaved changes" warning.
-     */
-    public function disableWarningForUnsavedChanges()
-    {
-        $I = $this;
-        $I->executeJs('window.onbeforeunload = null;');
-    }
-
-    /**
      * Fill amount fields. May need to be filled out; currently assumes most
      * donation forms have a default option selected.
      *
@@ -53,21 +44,6 @@ class ContributionPage extends \AcceptanceTester
         if ($I->detectOtherAmountIsRequired()) {
             $I->fillField('.other_amount-content input.required', $amount);
         }
-    }
-
-    /**
-     * Fill essential CiviCRM Contribute fields (first name, last name, email)
-     * using Faker data.
-     */
-    public function fillCiviEventFields()
-    {
-        $I = $this;
-        $faker = \Faker\Factory::create();
-
-        // @TODO Consistent selectors with Contribute page.
-        $I->fillField('#email-Primary', $faker->safeEmail());
-        $I->executeJS("CRM.$('input[id*=\"first_name\"]').val(" . json_encode($faker->firstName()) . ");");
-        $I->executeJS("CRM.$('input[id*=\"last_name\"]').val(" . json_encode($faker->lastName()) . ");");
     }
 
     /**
@@ -86,27 +62,6 @@ class ContributionPage extends \AcceptanceTester
         // could just add a .first-name class etc to Civi's forms.
         $I->executeJS("CRM.$('input[id*=\"first_name\"]').val(" . json_encode($faker->firstName()) . ");");
         $I->executeJS("CRM.$('input[id*=\"last_name\"]').val(" . json_encode($faker->lastName()) . ");");
-    }
-
-    /**
-     * If there are others we can get them with increased craziness. Should
-     * just put a .required on each required input, this JS will do for now.
-     */
-    public function fillCiviRequiredFields()
-    {
-        $I = $this;
-        $I->executeJs("
-           CRM.$('input', CRM.$('.crm-marker[title*=\"required\"]').closest('.crm-section')).each(function () { 
-             if (this.value === '') { 
-               this.value = '-'; 
-             } 
-           });
-           CRM.$('select', CRM.$('.crm-marker[title*=\"required\"]').closest('.crm-section')).each(function () { 
-             if (this.selectedIndex === 0) { 
-               this.selectedIndex = 3; 
-             } 
-           });
-        ");
     }
 
     /**
