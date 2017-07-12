@@ -23,7 +23,7 @@ class EventPagesCest
      *
      * @return array
      */
-    protected function eventPageProvider()
+    protected static function eventPageProvider()
     {
         $config = \Codeception\Configuration::config();
         $civiRemoteApi = new \CiviRemoteApi($config['modules']['config']['CiviRemoteApi']);
@@ -94,16 +94,17 @@ class EventPagesCest
     }
 
     /**
-     * @param AcceptanceTester $I , \Codeception\Example $example
+     * @param AcceptanceTester $I, \Codeception\Example $example
      *
      * @dataprovider eventPageProvider
      *
      * @group event
-     *
      */
-    function EventPages(\Step\Acceptance\ContributionPage $I, \Codeception\Example $example)
+    function EventPages(\Step\Acceptance\EventPage $I, \Codeception\Example $example)
     {
-        $I->amOnPage($example['event_url']);
+      // $I->focus();
+
+      $I->amOnPage($example['event_url']);
         $I->see($example['event_title']);
 
         $I->disableWarningForUnsavedChanges();
