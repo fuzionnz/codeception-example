@@ -114,10 +114,10 @@ class ContributionPagesCest
      *
      * @dataprovider contributionPageProvider
      *
-     * @group donation
+     * @group contribution
      * @group fnord
      */
-    public function AllDonationPages(\Step\Acceptance\ContributionPage $I, \Codeception\Example $example)
+    public function AllContributionPages(\Step\Acceptance\ContributionPage $I, \Codeception\Example $example)
     {
         // $I->focus();
 
@@ -146,10 +146,11 @@ class ContributionPagesCest
      *
      * @param AcceptanceTester $I, \Codeception\Example $example
      *
-     * @group donation2
+     * @group contribution2
      * @group dataprovider
      */
-    function AllDonationPagesByExample(\Step\Acceptance\ContributionPage $I, \Codeception\Example $example) {
+    /*
+    function AllContributionPagesByExample(\Step\Acceptance\ContributionPage $I, \Codeception\Example $example) {
         $I->amOnPage("civicrm/contribute/transact?reset=1&id={$example['id']}");
         $I->see($example['title']);
 
@@ -165,6 +166,7 @@ class ContributionPagesCest
             'payment_processor_class_name' => $example['payment_processor_class_name'],
         ]);
     }
+    */
 
     /**
      * A DataProvider would be better here.
@@ -176,9 +178,9 @@ class ContributionPagesCest
      *
      * @param \AcceptanceTester $I
      *
-     * @group donation
+     * @group contribution
      */
-    public function DonationPages(\Step\Acceptance\ContributionPage $I)
+    public function contributionPages(\Step\Acceptance\ContributionPage $I)
     {
         // DataProvider section.
         $params = [
@@ -278,8 +280,8 @@ class ContributionPagesCest
         }
 
         // required_values is the civicrm field names (from civicrm pages)
-        // + any associated with this donation page
-        // + accept a generator of some sort - can be civicrm api get all donation pages
+        // + any associated with this contribution page
+        // + accept a generator of some sort - can be civicrm api get all contribution pages
         // + dynamically match any field marked "required" as populsyttyrf
 
         // Run a transaction - for each payment processor on the page.

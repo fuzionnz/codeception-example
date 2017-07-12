@@ -122,7 +122,6 @@ class ContributionPage extends CivicrmPage
 
                 $I->see('Transaction Approved');
                 $I->click('a.DpsPxPayOK');
-
                 break;
 
             case 'Payment_Paystation':
@@ -136,7 +135,6 @@ class ContributionPage extends CivicrmPage
                 $I->selectOption('#expiryyear', date('Y'));
                 $I->fillField('#cardholder', $faker->name());
                 $I->click('#pay_button');
-                // $I->see($details['amt'], '.amount_display-group');
                 break;
 
             case 'Dummy':
