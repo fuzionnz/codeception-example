@@ -22,6 +22,15 @@ class ContributionPage extends CivicrmPage
     }
 
     /**
+     * Detect whether there is a required "username" field.
+     */
+    public function detectUsernameIsRequired()
+    {
+        $I = $this;
+        return $I->executeJs('return CRM.$(\'.other_amount-content input.required\').length !== 0;');
+    }
+
+    /**
      * Detect if contribution page has multiple processors available.
      *
      * @return boolean
@@ -114,6 +123,20 @@ class ContributionPage extends CivicrmPage
                 $I->see('Transaction Approved');
                 $I->click('a.DpsPxPayOK');
 
+                break;
+
+            case 'Payment_Paystation':
+                // "Confirm Contribution"
+                $I->fillCiviRequiredFields();
+                $I->click('.crm-form-submit.default');
+                $I->click('#card_type_MASTERCARD');
+                $I->fillField('#cardnumber', '5123456789012346');
+                $I->fillField('#cardverificationcode', '123');
+                $I->selectOption('#expirymonth', date('m'));
+                $I->selectOption('#expiryyear', date('Y'));
+                $I->fillField('#cardholder', $faker->name());
+                $I->click('#pay_button');
+                // $I->see($details['amt'], '.amount_display-group');
                 break;
 
             case 'Dummy':

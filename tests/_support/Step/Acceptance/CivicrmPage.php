@@ -37,19 +37,20 @@ class CivicrmPage extends \AcceptanceTester
      */
     public function fillCiviRequiredFields()
     {
-      $I = $this;
-      $I->executeJs("
-             CRM.$('input', CRM.$('.crm-marker[title*=\"required\"]').closest('.crm-section')).each(function () { 
-               if (this.value === '') { 
-                 this.value = '-'; 
-               } 
-             });
-             CRM.$('select', CRM.$('.crm-marker[title*=\"required\"]').closest('.crm-section')).each(function () { 
-               if (this.selectedIndex === 0) { 
-                 this.selectedIndex = 3; 
-               } 
-             });
-          ");
+        $this->executeJs("
+               CRM.$('input', CRM.$('.crm-marker[title*=\"required\"]').closest('.crm-section')).each(function () {
+                   if (this.value === '') {
+                     this.value = '-';
+                   }
+               });
+               CRM.$('select', CRM.$('.crm-marker[title*=\"required\"]').closest('.crm-section')).each(function () {
+                   if (this.selectedIndex === 0) {
+                     this.selectedIndex = 3;
+                   }
+               });
+
+               CRM.$('input#cms_name.required').val('testuser.' + Date.now());
+            ");
     }
 
     /**
