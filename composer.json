@@ -1,10 +1,19 @@
 {
     "require": {
         "codeception/codeception": "~2.2",
+        "browserstack/browserstack-local": "dev-master",
+        "codegyre/robo": "*",
+        "codeception/robo-paracept": "@dev",
         "fuzionnz/codeception-config-helper": "dev-master",
         "fuzionnz/codeception-drupal-pages": "~0.2",
         "fuzionnz/codeception-drupal-variable": "~0.3",
         "fuzionnz/codeception-civicrm-pages": "~0.1"
+    },
+    "scripts": {
+        "test": "composer single && composer local && composer parallel",
+        "single": "vendor/bin/codecept run --env single -g single",
+        "local": "vendor/bin/codecept run --env local -g local",
+        "parallel": "vendor/bin/robo parallel:all"
     },
     "require-dev": {
         "league/factory-muffin": "^3.0",
@@ -27,5 +36,8 @@
             "type": "path",
             "url": "/Users/chris/Documents/codeception-config-helper"
         }
-    ]
+    ],
+    "autoload": {
+        "classmap": ["lib/"]
+    }
 }
