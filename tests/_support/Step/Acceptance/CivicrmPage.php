@@ -17,8 +17,15 @@ class CivicrmPage extends \AcceptanceTester
      *
      * @TODO Make this a config setting, and not need to call it in each test.
      */
-    public function focus() {
-      // $this->switchToWindow();
+    public function autofocus()
+    {
+        // Is it clunky to load this way?
+        $config = \Codeception\Configuration::config();
+        codecept_debug($config);
+        if (!empty($config['modules']['config']['CiviRemote']['api_key'])){
+            $this->switchToWindow();
+        }
+
     }
 
     function seePageHasElement($element)

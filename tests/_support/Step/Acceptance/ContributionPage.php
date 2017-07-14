@@ -64,7 +64,7 @@ class ContributionPage extends CivicrmPage
         $I = $this;
         $faker = \Faker\Factory::create();
 
-        $email = $faker->safeEmail();
+        $safeEmail = $faker->safeEmail();
         $firstName = $faker->firstName();
         $lastName = $faker->lastName();
 

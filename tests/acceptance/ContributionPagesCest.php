@@ -106,8 +106,6 @@ class ContributionPagesCest
             }
         }
 
-        codecept_debug($examples);
-
         return $examples;
     }
 
@@ -120,7 +118,8 @@ class ContributionPagesCest
      */
     public function AllContributionPages(\Step\Acceptance\ContributionPage $I, \Codeception\Example $example)
     {
-        // $I->focus();
+        $config = \Codeception\Configuration::config();
+        $I->autofocus();
 
         $I->amOnPage($example['page_url']);
         $I->see($example['page_title']);
@@ -179,7 +178,7 @@ class ContributionPagesCest
      *
      * @param \AcceptanceTester $I
      *
-     * @group contribution
+     * @group contribution-old
      */
     public function contributionPages(\Step\Acceptance\ContributionPage $I)
     {
