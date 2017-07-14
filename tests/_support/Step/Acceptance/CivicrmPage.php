@@ -28,7 +28,14 @@ class CivicrmPage extends \AcceptanceTester
 
     }
 
-    function seePageHasElement($element)
+    /**
+     * See if an element is in the page via WebDriver.
+     *
+     * @param string $element
+     *
+     * @return bool
+     */
+    function detectElementPresent($element)
     {
         try {
             $this->getModule('WebDriver')->seeElement($element);

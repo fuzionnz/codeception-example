@@ -99,8 +99,9 @@ class ContributionPage extends CivicrmPage
         // hidden element. If not, then we need to select.
         if ($I->detectMultiplePaymentProcessorsAvailable()) {
             $payment_processor_radio = "#CIVICRM_QFID_{$details['payment_processor_id']}_payment_processor_id";
-            $I->seeElement($payment_processor_radio);
-            $I->click($payment_processor_radio);
+            // @TODO: Should be able to $I->click() ... is it hidden sometimes?
+            // So use JS to not fail test.
+            $I->executeJs('return CRM.$(\'' . $payment_processor_radio . '\').click();');
             $I->waitForJS("return CRM.$.active == 0;", 60);
         }
 
