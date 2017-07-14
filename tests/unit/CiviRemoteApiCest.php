@@ -14,7 +14,7 @@ class CiviRemoteApiCest
     /**
      * @param \UnitTester $I
      *
-     * @group blah
+     * @group civiremote
      */
     public function authenticatedContactGetShouldNotBeAnError(UnitTester $I)
     {

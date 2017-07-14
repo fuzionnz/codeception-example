@@ -43,7 +43,12 @@ class CiviRemoteApi extends \Codeception\Module
         ]);
 
         $params = array_merge($creds, $params);
-        $request = $client->post('', ['form_params' => $params, 'query' => 'json=1']);
+        try {
+            $request = $client->post('', ['form_params' => $params, 'query' => 'json=1']);
+        }
+        catch (Exception $e) {
+            die($e->getResponse()->getBody(true));
+        }
 
         // Guzzle throws exception on HTTP error, we don't need to check that.
         // Need to check returned values are valid JSON though.
