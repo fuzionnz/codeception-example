@@ -146,6 +146,28 @@ class ContributionPage extends CivicrmPage
             case 'uk.co.vedaconsulting.payment.gocardlessdd':
                 // "Confirm Contribution"
                 $I->click('.crm-form-submit.default');
+                // If your test fails here, check CiviCRM debug log.
+                // Looks like GoCardless API rejects connection if no local SSL?
+                $I->dontSee('Could not connect to Gocardless API');
+
+                // GoCardless angular checkout form.
+                $I->fillField('#customer_given_name', $faker->firstName());
+                $I->fillField('#customer_family_name', $faker->lastName());
+                $I->fillField('#customer_email', $faker->safeEmail());
+                // I have no idea.
+                $I->fillField('#customer_bank_accounts_branch_code', '20-00-00');
+                $I->fillField('#customer_bank_accounts_account_number', '55779911');
+                $I->click('.address-lookup-toggle button');
+                $I->fillField('#customer_address_line1', $faker->streetAddress());
+                $I->fillField('#customer_address_line2', $faker->secondaryAddress());
+                $I->fillField('#customer_city', $faker->city());
+                $I->fillField('#customer_postal_code', $faker->postcode());
+                $I->click('.payment-details__continue .btn--primary');
+
+                $I->click('.account-details__confirm .btn--primary');
+
+                $I->wait(60);
+                break;
 
             case 'Payment_AuthorizeNet':
             case 'Payment_Elavon':
