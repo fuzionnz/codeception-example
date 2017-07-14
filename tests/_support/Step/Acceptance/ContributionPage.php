@@ -76,6 +76,8 @@ class ContributionPage extends CivicrmPage
         $I->executeJS("CRM.$('input[id*=\"first_name\"]').val(" . json_encode($firstName) . ");");
         $I->executeJS("CRM.$('input[id*=\"last_name\"]').val(" . json_encode($lastName) . ");");
         $I->executeJS("CRM.$('input[id*=\"email\"]').val(" . json_encode($safeEmail) . ");");
+
+        $I->executeJS("CRM.$('.price-set-option-content .crm-form-radio').first().click();");
     }
 
     /**
@@ -184,7 +186,12 @@ class ContributionPage extends CivicrmPage
             // * PayPal - Express - "PayPal_Express"
             // * PayPal - Website Payments Standard - "PayPal_Standard"
             case 'Payment_PayPalImpl':
-
+                // Congratulations! It's time to implement a new checkout process.
+                // Base your checkout on the others here.
+                // Config from your .yml is in $config if you want some.
+                $message = 'Not implemented: ' . $details['payment_processor_class_name'] . ' - see ' .
+                  __FILE__ . '@' . __LINE__;
+                $I->fail($message);
                 break;
 
             case 'Payment_Dummy':
