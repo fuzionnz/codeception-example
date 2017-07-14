@@ -25,6 +25,11 @@ class CiviRemote extends \Codeception\Module
     // protected $config = ['host' => '127.0.0.1', 'port' => '4444'];
 
     /**
+     * @TODO Make it really clear when API call fails.
+     *
+     * Otherwise we end up with "dataProvider invalid or not callable" when
+     * this throws an exception, which is a timewaster.
+     *
      * @param array $params
      *   CiviCRM APIv3 parameters array.
      *

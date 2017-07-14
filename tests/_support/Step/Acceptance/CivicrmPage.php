@@ -18,7 +18,7 @@ class CivicrmPage extends \AcceptanceTester
      * @TODO Make this a config setting, and not need to call it in each test.
      */
     public function focus() {
-      $this->switchToWindow();
+      // $this->switchToWindow();
     }
 
     function seePageHasElement($element)

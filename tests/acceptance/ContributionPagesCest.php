@@ -25,7 +25,7 @@ class ContributionPagesCest
      *
      * @return array
      */
-    protected static function contributionPageProvider()
+    public function __contributionPageProvider()
     {
         // I'd love to be able to initialise this in _before() or _inject(),
         // but it seems like dataProviders are called before that ... so this is
@@ -74,37 +74,39 @@ class ContributionPagesCest
             if (isset($page['payment_processor'])) {
                 // If API returned a single value, make it an array.
                 $processor_ids = (is_array($page['payment_processor'])) ?
-                    $page['payment_processor'] : [$page['payment_processor']];
+                  $page['payment_processor'] : [$page['payment_processor']];
 
                 foreach ($processor_ids as $payment_processor_id) {
-                    $params = [
-                        'entity' => 'PaymentProcessor',
-                        'action' => 'get',
-                        'id' => $payment_processor_id,
-                        'sequential' => true,
-                    ];
-                    $payment_processor = $civiRemoteApi->civiRemote($params);
-                    $payment_processor = $payment_processor['values'][0];
-                    $example['payment_processor_id'] = $payment_processor_id;
-                    $example['payment_processor_class_name'] = $payment_processor['class_name'];
-                    $example['payment_processor_billing_mode'] = $payment_processor['billing_mode'];
-                    $example['payment_processor_is_recur'] = $payment_processor['is_recur'];
+                  $params = [
+                      'entity' => 'PaymentProcessor',
+                      'action' => 'get',
+                      'id' => $payment_processor_id,
+                      'sequential' => true,
+                  ];
+                  $payment_processor = $civiRemoteApi->civiRemote($params);
+                  $payment_processor = $payment_processor['values'][0];
+                  $example['payment_processor_id'] = $payment_processor_id;
+                  $example['payment_processor_class_name'] = $payment_processor['class_name'];
+                  $example['payment_processor_billing_mode'] = $payment_processor['billing_mode'];
+                  $example['payment_processor_is_recur'] = $payment_processor['is_recur'];
 
-                    $params = [
-                        'entity' => 'PaymentProcessorType',
-                        'action' => 'get',
-                        'id' => $payment_processor['payment_processor_type_id'],
-                        'sequential' => 1,
-                    ];
-                    $payment_processor_type = $civiRemoteApi->CiviRemote($params);
-                    $payment_processor_type = $payment_processor_type['values'][0];
-                    $example['payment_processor_type_name'] = $payment_processor_type['name'];
-                    $example['payment_processor_type_title'] = $payment_processor_type['title'];
+                  $params = [
+                      'entity' => 'PaymentProcessorType',
+                      'action' => 'get',
+                      'id' => $payment_processor['payment_processor_type_id'],
+                      'sequential' => 1,
+                  ];
+                  $payment_processor_type = $civiRemoteApi->CiviRemote($params);
+                  $payment_processor_type = $payment_processor_type['values'][0];
+                  $example['payment_processor_type_name'] = $payment_processor_type['name'];
+                  $example['payment_processor_type_title'] = $payment_processor_type['title'];
 
-                    $examples[] = $example;
+                  $examples[] = $example;
                 }
             }
         }
+
+        codecept_debug($examples);
 
         return $examples;
     }
@@ -112,10 +114,9 @@ class ContributionPagesCest
     /**
      * @param AcceptanceTester $I , \Codeception\Example $example
      *
-     * @dataprovider contributionPageProvider
+     * @dataprovider __contributionPageProvider
      *
      * @group contribution
-     * @group fnord
      */
     public function AllContributionPages(\Step\Acceptance\ContributionPage $I, \Codeception\Example $example)
     {

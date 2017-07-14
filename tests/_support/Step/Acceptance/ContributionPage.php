@@ -64,13 +64,18 @@ class ContributionPage extends CivicrmPage
         $I = $this;
         $faker = \Faker\Factory::create();
 
+        $email = $faker->safeEmail();
+        $firstName = $faker->firstName();
+        $lastName = $faker->lastName();
+
         // Some fields are easy to match.
-        $I->fillField('.email.required', $faker->safeEmail());
+        $I->fillField('.email.required', $safeEmail);
 
         // Some are slightly trickier. Required ID could be got from API, or we
         // could just add a .first-name class etc to Civi's forms.
-        $I->executeJS("CRM.$('input[id*=\"first_name\"]').val(" . json_encode($faker->firstName()) . ");");
-        $I->executeJS("CRM.$('input[id*=\"last_name\"]').val(" . json_encode($faker->lastName()) . ");");
+        $I->executeJS("CRM.$('input[id*=\"first_name\"]').val(" . json_encode($firstName) . ");");
+        $I->executeJS("CRM.$('input[id*=\"last_name\"]').val(" . json_encode($lastName) . ");");
+        $I->executeJS("CRM.$('input[id*=\"email\"]').val(" . json_encode($safeEmail) . ");");
     }
 
     /**
@@ -136,6 +141,16 @@ class ContributionPage extends CivicrmPage
                 $I->fillField('#cardholder', $faker->name());
                 $I->click('#pay_button');
                 break;
+
+            case 'uk.co.vedaconsulting.payment.gocardlessdd':
+                // "Confirm Contribution"
+                $I->click('.crm-form-submit.default');
+
+            case 'Payment_eWAY':
+                //
+
+            case 'Payment_PayPalImpl':
+                // @TODO
 
             case 'Dummy':
             default:

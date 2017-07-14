@@ -48,20 +48,20 @@ class ProfilePagesCest
         $profiles = $civiRemoteApi->CiviRemote($params);
         $examples = [];
 
-        codecept_debug($profiles);
-
-        // Iterate over pages to pick up payment processors.
-        foreach ($profiles['values'] as $profile) {
+        if (!empty($profiles['values'])) {
+          // Iterate over pages to pick up payment processors.
+          foreach ($profiles['values'] as $profile) {
             $example = [
-                'profile_id' => $profile['id'],
-                'profile_title' => $profile['title'],
-                'profile_url' => "civicrm/profile/create?gid={$profile['id']}",
+              'profile_id' => $profile['id'],
+              'profile_title' => $profile['title'],
+              'profile_url' => "civicrm/profile/create?gid={$profile['id']}",
             ];
 
             // Other profile setup?
             $examples[] = $example;
-        }
+          }
 
+        }
         return $examples;
     }
 
