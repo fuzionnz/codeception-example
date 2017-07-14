@@ -146,12 +146,25 @@ class ContributionPage extends CivicrmPage
                 // "Confirm Contribution"
                 $I->click('.crm-form-submit.default');
 
+            case 'Payment_AuthorizeNet':
+            case 'Payment_Elavon':
             case 'Payment_eWAY':
-                //
+            case 'Payment_FirstData':
+            case 'Payment_Google':
+            case 'Payment_PayflowPro':
+            case 'Payment_Realex':
+            case 'Payment_PaymentExpress':
+            case 'Payment_PayJunction':
 
+            // This is the classname for all of:
+            // * PayPal - Website Payments Pro - "PayPal"
+            // * PayPal - Express - "PayPal_Express"
+            // * PayPal - Website Payments Standard - "PayPal_Standard"
             case 'Payment_PayPalImpl':
-                // @TODO
 
+                break;
+
+            case 'Payment_Dummy':
             case 'Dummy':
             default:
                 // The credit card type option is a required <select> when there
