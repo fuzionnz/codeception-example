@@ -28,6 +28,12 @@ modules:
             demo_password:  'some.regularpass'
         CiviRemote:
             api_key: APIKEY
-            site_key: SEKRITKEY
+            site_key: SECRETKEY
+            url: http://civicrm.dev/sites/all/modules/civicrm/extern/rest.php
+        CiviRemoteApi:
+            # api_key matches a permissioned contact/user via DB in civicrm_contact.api_key
+            api_key: APIKEY
+            # site_key matches the define CIVICRM_SITE_KEY from civicrm.settings.php (8 chars or more)
+            site_key: SECRETKEY
             url: http://civicrm.dev/sites/all/modules/civicrm/extern/rest.php
 
