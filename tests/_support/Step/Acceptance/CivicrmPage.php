@@ -21,8 +21,7 @@ class CivicrmPage extends \AcceptanceTester
     {
         // Is it clunky to load this way?
         $config = \Codeception\Configuration::config();
-        codecept_debug($config);
-        if (!empty($config['modules']['config']['CiviRemote']['api_key'])){
+        if (!empty($config['modules']['config']['CiviCRM']['switch_to_window'])){
             $this->switchToWindow();
         }
 

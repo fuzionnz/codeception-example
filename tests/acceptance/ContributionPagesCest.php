@@ -250,13 +250,13 @@ class ContributionPagesCest
                     $example['payment_processor_type_title'] = $payment_processor_type['title'];
 
                     $examples[] = $example;
-                    codecept_debug(['$example' => $example]);
+                    // codecept_debug(['$example' => $example]);
                 }
             }
         }
 
         // Alright, we've built a list of contribution pages examples. Let's test them!
-        codecept_debug(['$examples' => $examples]);
+        // codecept_debug(['$examples' => $examples]);
 
         foreach ($examples as $example) {
             $I->amOnPage($example['page_url']);
